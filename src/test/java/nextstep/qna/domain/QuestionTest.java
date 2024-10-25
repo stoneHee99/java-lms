@@ -1,6 +1,7 @@
 package nextstep.qna.domain;
 
 import nextstep.qna.CannotDeleteException;
+import nextstep.qna.ForbiddenException;
 import nextstep.users.domain.NsUserTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -44,5 +45,22 @@ public class QuestionTest {
         question.addAnswer(new Answer(NsUserTest.SANJIGI, Q1, "Answers Contents1"));
         assertThatThrownBy(() -> question.delete(NsUserTest.JAVAJIGI))
             .isInstanceOf(CannotDeleteException.class);
+    }
+
+    @DisplayName("질문 삭제 이력 생성 시 삭제되지 않은 질문인 경우 예외가 발생하는지")
+    @Test
+    void createDeleteHistoryTest_WhenNotDeleted() {
+        Question question = new Question(NsUserTest.JAVAJIGI, "title1", "contents1");
+        assertThatThrownBy(question::toDeleteHistories)
+            .isInstanceOf(ForbiddenException.class);
+    }
+
+    @DisplayName("질문 삭제 이력 생성 시 삭제된 질문인 경우 삭제 이력이 생성되는지")
+    @Test
+    void createDeleteHistoryTest_WhenDeleted() {
+        Question question = new Question(NsUserTest.JAVAJIGI, "title1", "contents1");
+        question.delete(NsUserTest.JAVAJIGI);
+        assertThatNoException()
+            .isThrownBy(question::toDeleteHistories);
     }
 }

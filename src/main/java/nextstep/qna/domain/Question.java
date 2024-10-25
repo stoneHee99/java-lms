@@ -1,6 +1,7 @@
 package nextstep.qna.domain;
 
 import nextstep.qna.CannotDeleteException;
+import nextstep.qna.ForbiddenException;
 import nextstep.users.domain.NsUser;
 
 import java.time.LocalDateTime;
@@ -52,7 +53,6 @@ public class Question {
         return deleted;
     }
 
-
     public void delete(NsUser user) {
         validateDeletable(user);
         setDeleteInfo(user);
@@ -68,6 +68,20 @@ public class Question {
         this.deleted = true;
         this.updatedDate = LocalDateTime.now();
         answers.delete(user);
+    }
+
+    public List<DeleteHistory> toDeleteHistories() {
+        if(!deleted) {
+            throw new ForbiddenException("질문이 삭제되지 않았습니다.");
+        }
+        List<DeleteHistory> deleteHistories = new ArrayList<>();
+        deleteHistories.add(toDeleteHistory());
+        deleteHistories.addAll(answers.toDeleteHistories());
+        return deleteHistories;
+    }
+
+    private DeleteHistory toDeleteHistory() {
+        return new DeleteHistory(ContentType.QUESTION, id, writer, LocalDateTime.now());
     }
 
     private boolean isOwner(NsUser loginUser) {

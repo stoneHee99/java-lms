@@ -25,20 +25,6 @@ public class DeleteHistory {
         this.createdDate = createdDate;
     }
 
-    public DeleteHistory(Answer answer) {
-        this(ContentType.ANSWER, answer.getId(), answer.getWriter(), LocalDateTime.now());
-        if (!answer.isDeleted()) {
-            throw new CannotDeleteException("삭제할 수 없는 답변입니다.");
-        }
-    }
-
-    public DeleteHistory(Question question) {
-        this(ContentType.QUESTION, question.getId(), question.getWriter(), LocalDateTime.now());
-        if (!question.isDeleted()) {
-            throw new CannotDeleteException("삭제할 수 없는 질문입니다.");
-        }
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
