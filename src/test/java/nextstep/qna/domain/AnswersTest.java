@@ -8,17 +8,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class AnswersTest {
 
-    @DisplayName("답변 추가가 잘 되는지")
-    @Test
-    void addTest() {
-        Answers answers = new Answers();
-        Answer answer = new Answer(1L, NsUserTest.JAVAJIGI, QuestionTest.Q1, "답변 내용");
-
-        answers.add(answer);
-
-        assertThat(answers.size()).isEqualTo(1);
-    }
-
     @DisplayName("답변이 없는 경우 삭제 가능한지")
     @Test
     void isDeletableTest_WhenEmpty() {

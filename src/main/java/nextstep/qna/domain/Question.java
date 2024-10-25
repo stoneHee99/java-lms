@@ -52,9 +52,6 @@ public class Question {
         return deleted;
     }
 
-    public Answers getAnswers() {
-        return answers;
-    }
 
     public List<DeleteHistory> delete(NsUser user) throws CannotDeleteException {
         validateDeletable(user);

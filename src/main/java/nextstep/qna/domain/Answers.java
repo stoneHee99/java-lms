@@ -23,14 +23,6 @@ public class  Answers {
         answers.add(answer);
     }
 
-    public int size() {
-        return answers.size();
-    }
-
-    public List<Answer> getAnswers() {
-        return Collections.unmodifiableList(answers);
-    }
-
     public boolean isDeletable(NsUser questionUser) {
         return answers.stream()
                 .allMatch(answer -> answer.isOwner(questionUser));
