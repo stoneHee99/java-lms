@@ -29,12 +29,16 @@ public class DeleteHistory {
 
     public DeleteHistory(Answer answer) {
         this(ContentType.ANSWER, answer.getId(), answer.getWriter(), LocalDateTime.now());
-        if (!answer.isDeleted()) throw new ForbiddenException("삭제할 수 없는 답변입니다.");
+        if (!answer.isDeleted()) {
+            throw new ForbiddenException("삭제할 수 없는 답변입니다.");
+        }
     }
 
     public DeleteHistory(Question question) {
         this(ContentType.QUESTION, question.getId(), question.getWriter(), LocalDateTime.now());
-        if (!question.isDeleted()) throw new ForbiddenException("삭제할 수 없는 질문입니다.");
+        if (!question.isDeleted()) {
+            throw new ForbiddenException("삭제할 수 없는 질문입니다.");
+        }
     }
 
     @Override
