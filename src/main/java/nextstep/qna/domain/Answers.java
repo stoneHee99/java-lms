@@ -23,14 +23,7 @@ public class  Answers {
         answers.add(answer);
     }
 
-    public boolean isDeletable(NsUser questionUser) {
-        return answers.stream()
-                .allMatch(answer -> answer.isOwner(questionUser));
-    }
-
-    public List<DeleteHistory> delete() {
-        return answers.stream()
-                .map(Answer::delete)
-                .collect(Collectors.toList());
+    public void delete(NsUser user) {
+        answers.forEach(answer -> answer.delete(user));
     }
 }

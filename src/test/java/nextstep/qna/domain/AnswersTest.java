@@ -1,10 +1,11 @@
 package nextstep.qna.domain;
 
+import nextstep.qna.CannotDeleteException;
 import nextstep.users.domain.NsUserTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 class AnswersTest {
 
@@ -12,8 +13,7 @@ class AnswersTest {
     @Test
     void isDeletableTest_WhenEmpty() {
         Answers answers = new Answers();
-
-        assertThat(answers.isDeletable(NsUserTest.JAVAJIGI)).isTrue();
+        assertThatNoException().isThrownBy(() -> answers.delete(NsUserTest.JAVAJIGI));
     }
 
     @DisplayName("모든 답변이 질문 작성자의 경우 삭제 가능한지")
@@ -26,7 +26,7 @@ class AnswersTest {
         answers.add(answer1);
         answers.add(answer2);
 
-        assertThat(answers.isDeletable(NsUserTest.JAVAJIGI)).isTrue();
+        assertThatNoException().isThrownBy(() -> answers.delete(NsUserTest.JAVAJIGI));
     }
 
     @DisplayName("다른 사용자가 답변을 작성한 경우 삭제 불가능한지")
@@ -39,6 +39,7 @@ class AnswersTest {
         answers.add(answer1);
         answers.add(answer2);
 
-        assertThat(answers.isDeletable(NsUserTest.JAVAJIGI)).isFalse();
+        assertThatThrownBy(() -> answers.delete(NsUserTest.JAVAJIGI))
+                .isInstanceOf(CannotDeleteException.class);
     }
 }

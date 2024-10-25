@@ -53,28 +53,21 @@ public class Question {
     }
 
 
-    public List<DeleteHistory> delete(NsUser user) throws CannotDeleteException {
+    public void delete(NsUser user) {
         validateDeletable(user);
-        List<DeleteHistory> deleteHistories = new ArrayList<>();
-        setDeleteInfo();
-        deleteHistories.add(new DeleteHistory(this));
-        deleteHistories.addAll(deleteAnswers(user));
-        return deleteHistories;
+        setDeleteInfo(user);
     }
 
-    private void validateDeletable(NsUser user) throws CannotDeleteException {
-        if (!isOwner(user) || !answers.isDeletable(user)) {
+    private void validateDeletable(NsUser user) {
+        if (!isOwner(user)) {
             throw new CannotDeleteException("질문을 삭제할 수 없습니다.");
         }
     }
 
-    private void setDeleteInfo() {
+    private void setDeleteInfo(NsUser user) {
         this.deleted = true;
         this.updatedDate = LocalDateTime.now();
-    }
-
-    private List<DeleteHistory> deleteAnswers(NsUser user) {
-        return answers.delete();
+        answers.delete(user);
     }
 
     private boolean isOwner(NsUser loginUser) {

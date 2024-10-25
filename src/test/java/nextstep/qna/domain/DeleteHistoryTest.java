@@ -17,7 +17,7 @@ class DeleteHistoryTest {
     @Test
     void createTest_byAnswer() {
         Answer answer = new Answer(1L, NsUserTest.JAVAJIGI, QuestionTest.Q1, "writer");
-        answer.delete();
+        answer.delete(NsUserTest.JAVAJIGI);
         DeleteHistory deleteHistory = new DeleteHistory(answer);
         assertThat(deleteHistory).isEqualTo(new DeleteHistory(ContentType.ANSWER, 1L, NsUserTest.JAVAJIGI, LocalDateTime.now()));
     }
