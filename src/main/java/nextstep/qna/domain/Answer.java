@@ -1,5 +1,7 @@
 package nextstep.qna.domain;
 
+import nextstep.qna.CannotDeleteException;
+import nextstep.qna.ForbiddenException;
 import nextstep.qna.NotFoundException;
 import nextstep.qna.UnAuthorizedException;
 import nextstep.users.domain.NsUser;
@@ -21,8 +23,6 @@ public class Answer {
 
     private LocalDateTime updatedDate;
 
-    public Answer() {
-    }
 
     public Answer(NsUser writer, Question question, String contents) {
         this(null, writer, question, contents);
@@ -47,29 +47,30 @@ public class Answer {
         return id;
     }
 
-    public Answer setDeleted(boolean deleted) {
-        this.deleted = deleted;
-        return this;
-    }
-
     public boolean isDeleted() {
         return deleted;
-    }
-
-    public boolean isOwner(NsUser writer) {
-        return this.writer.equals(writer);
     }
 
     public NsUser getWriter() {
         return writer;
     }
 
-    public String getContents() {
-        return contents;
+    public void delete(NsUser user) {
+        if (!isOwner(user)) {
+            throw new CannotDeleteException("질문을 삭제할 권한이 없습니다.");
+        }
+        deleted = true;
     }
 
-    public void toQuestion(Question question) {
-        this.question = question;
+    public DeleteHistory toDeleteHistory() {
+        if (!deleted) {
+            throw new ForbiddenException("삭제되지 않은 답변은 삭제 이력으로 이동할 수 없습니다.");
+        }
+        return new DeleteHistory(ContentType.ANSWER, id, writer, LocalDateTime.now());
+    }
+
+    private boolean isOwner(NsUser writer) {
+        return this.writer.equals(writer);
     }
 
     @Override
