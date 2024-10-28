@@ -1,10 +1,12 @@
 package nextstep.courses.domain;
 
 import java.io.File;
+import java.util.Set;
 
 public class CoverImage {
 
     private static final int MAX_FILE_SIZE = 1024 * 1024; // 1MB
+    private static final Set<String> ALLOWED_EXTENSION = Set.of("gif", "jpg", "jpeg", "png", "svg");
 
     private final File imageFile;
 
@@ -15,6 +17,7 @@ public class CoverImage {
 
     private void valid() {
         validFileSize();
+        validFileExtension();
     }
 
     private void validFileSize() {
@@ -24,6 +27,13 @@ public class CoverImage {
     }
 
     private void validFileExtension() {
+        String fileName = imageFile.getName();
+        String extension = fileName
+                .substring(fileName.lastIndexOf(".") + 1)
+                .toLowerCase();
 
+        if (!ALLOWED_EXTENSION.contains(extension)) {
+            throw new IllegalArgumentException("허용되지 않는 이미지 확장자입니다.");
+        }
     }
 }
