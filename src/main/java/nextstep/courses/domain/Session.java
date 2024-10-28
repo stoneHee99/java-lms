@@ -8,13 +8,16 @@ public abstract class Session {
 
     private final String title;
 
+    private final CoverImage coverImage;
+
     private final LocalDateTime startDate;
 
     private final LocalDateTime endDate;
 
-    protected Session(Long id, String title, LocalDateTime startDate, LocalDateTime endDate) {
+    protected Session(Long id, String title, CoverImage coverImage, LocalDateTime startDate, LocalDateTime endDate) {
         this.id = id;
         this.title = title;
+        this.coverImage = coverImage;
         this.startDate = startDate;
         this.endDate = endDate;
     }
