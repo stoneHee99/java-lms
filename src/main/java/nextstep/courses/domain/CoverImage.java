@@ -7,6 +7,7 @@ public class CoverImage {
 
     private static final int MAX_FILE_SIZE = 1024 * 1024; // 1MB
     private static final Set<String> ALLOWED_EXTENSION = Set.of("gif", "jpg", "jpeg", "png", "svg");
+    private static final double ASPECT_RATIO = 3.0 / 2.0;
 
     private final File imageFile;
 
@@ -18,6 +19,7 @@ public class CoverImage {
     private void valid() {
         validFileSize();
         validFileExtension();
+        validImageDimension();
     }
 
     private void validFileSize() {
@@ -35,5 +37,8 @@ public class CoverImage {
         if (!ALLOWED_EXTENSION.contains(extension)) {
             throw new IllegalArgumentException("허용되지 않는 이미지 확장자입니다.");
         }
+    }
+
+    private void validImageDimension() {
     }
 }

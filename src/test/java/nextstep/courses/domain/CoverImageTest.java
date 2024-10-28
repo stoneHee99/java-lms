@@ -6,12 +6,13 @@ import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
-import static org.assertj.core.api.Assertions.assertThatNoException;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 
 class CoverImageTest {
 
@@ -44,6 +45,17 @@ class CoverImageTest {
     void createCoverImage_withNotAllowedExtension() throws IOException {
         File invalidFile = new File(tempDirectory, "invalidFile.txt");
         Files.write(invalidFile.toPath(), new byte[1024]);
+
+        assertThatThrownBy(() -> new CoverImage(invalidFile))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("비율이 3:2가 아닌 이미지 생성시 예외가 발생하는지")
+    @Test
+    void createCoverImage_withInvalidRatio() throws IOException {
+        BufferedImage invalidImage = new BufferedImage(300, 250, BufferedImage.TYPE_INT_RGB);
+        File invalidFile = new File(tempDirectory, "invalidImage.jpg");
+        ImageIO.write(invalidImage, "jpg", invalidFile);
 
         assertThatThrownBy(() -> new CoverImage(invalidFile))
                 .isInstanceOf(IllegalArgumentException.class);
