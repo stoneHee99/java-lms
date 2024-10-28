@@ -11,7 +11,8 @@ public class CoverImage {
     private static final int MAX_FILE_SIZE = 1024 * 1024; // 1MB
     private static final Set<String> ALLOWED_EXTENSION = Set.of("gif", "jpg", "jpeg", "png", "svg");
     private static final String VECTOR_EXTENSION = "svg";
-
+    private static final int MIN_WIDTH = 300;
+    private static final int MIN_HEIGHT = 200;
     private static final double ASPECT_RATIO = 3.0 / 2.0;
 
     private final File imageFile;
@@ -52,6 +53,7 @@ public class CoverImage {
 
         try {
             BufferedImage image = ImageIO.read(imageFile);
+            validImageSize(image);
             validImageRatio(image);
         } catch (IOException e) {
             throw new IllegalArgumentException("이미지 파일이 손상되었습니다.");
@@ -60,6 +62,12 @@ public class CoverImage {
 
     private boolean isVectorImage() {
         return getFileExtension().equals(VECTOR_EXTENSION);
+    }
+
+    private void validImageSize(BufferedImage image) {
+        if (image.getWidth() < MIN_WIDTH || image.getHeight() < MIN_HEIGHT) {
+            throw new IllegalArgumentException("이미지 크기는 최소 300 x 200 이상이어야 합니다.");
+        }
     }
 
     private void validImageRatio(BufferedImage image) {
