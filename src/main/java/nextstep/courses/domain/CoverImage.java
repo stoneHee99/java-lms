@@ -25,7 +25,9 @@ public class CoverImage {
     private void valid() {
         validFileSize();
         validFileExtension();
-        validImageDimension();
+        if (!isVectorImage()) {
+            validImageDimension();
+        }
     }
 
     private void validFileSize() {
@@ -46,11 +48,11 @@ public class CoverImage {
         return fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
     }
 
-    private void validImageDimension() {
-        if (isVectorImage()) {
-            return;
-        }
+    private boolean isVectorImage() {
+        return getFileExtension().equals(VECTOR_EXTENSION);
+    }
 
+    private void validImageDimension() {
         try {
             BufferedImage image = ImageIO.read(imageFile);
             validImageSize(image);
@@ -58,10 +60,6 @@ public class CoverImage {
         } catch (IOException e) {
             throw new IllegalArgumentException("이미지 파일이 손상되었습니다.");
         }
-    }
-
-    private boolean isVectorImage() {
-        return getFileExtension().equals(VECTOR_EXTENSION);
     }
 
     private void validImageSize(BufferedImage image) {
@@ -72,7 +70,6 @@ public class CoverImage {
 
     private void validImageRatio(BufferedImage image) {
         double ratio = (double) image.getWidth() / image.getHeight();
-        System.out.println(ratio);
         if (ratio != ASPECT_RATIO) {
             throw new IllegalArgumentException("이미지 비율은 3:2 여야 합니다.");
         }

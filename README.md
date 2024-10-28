@@ -12,10 +12,10 @@
 - [x] `Course`는 기수 단위로 운영되며, 여러 개의 `Session`을 가질 수 있다.
   - [x] 해당 비즈니스 객체가 응집된 `Sessions` 일급 컬렉션을 만든다.
 - [x] `Session`은 `startDate` 와 `endDate` 를 가진다.
-- [ ] `Session`은 `CoverImage` 라는 강의 커버 이미지 정보를 가진다.
-  - [ ] `CoverImage`의 용량은 1MB 이하여야 한다.
-  - [ ] `CoverImage`의 확장자는 `gif, jpg (jpeg), png, svg` 이어야 한다.
-  - [ ] `CoverImage`는 `width`가 300px 이상, `height`는 200px 이상이어야 하며, `width와 height의 비율`은 3:2 여야 한다.
+- [x] `Session`은 `CoverImage` 라는 강의 커버 이미지 정보를 가진다.
+  - [x] `CoverImage`의 용량은 1MB 이하여야 한다.
+  - [x] `CoverImage`의 확장자는 `gif, jpg (jpeg), png, svg` 이어야 한다.
+  - [x] `CoverImage`는 `width`가 300px 이상, `height`는 200px 이상이어야 하며, `width와 height의 비율`은 3:2 여야 한다.
 - [ ] `Session`은 `FreeSession(무료강의)`과 `PaidSession(유료강의)`으로 나뉜다.
   - [ ] `FreeSession`은 최대 수강 인원 제한이 없다. 하지만 `PaidSession`은 제한이 있다.
   - [ ] `PaidSession`은 수강생이 결체한 금액과 수강료가 일치할 때만, 수강신청이 가능하다.
