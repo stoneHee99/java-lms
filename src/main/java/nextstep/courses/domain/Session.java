@@ -15,7 +15,6 @@ public abstract class Session {
     protected Session(Long id, String title, LocalDateTime startDate, LocalDateTime endDate) {
         this.id = id;
         this.title = title;
-        this.price = price;
         this.startDate = startDate;
         this.endDate = endDate;
     }
