@@ -10,7 +10,7 @@ public abstract class Session {
 
     private final String title;
 
-    private final SessionStatus status = SessionStatus.PREPARING;
+    private SessionStatus status = SessionStatus.PREPARING;
 
     private final CoverImage coverImage;
 
@@ -22,6 +22,14 @@ public abstract class Session {
 
     protected boolean canEnroll() {
         return SessionStatus.CanEnroll(status);
+    }
+
+    public void startRecruitment() {
+        if (!status.nextState()
+                .equals(SessionStatus.RECRUITING)) {
+            throw new IllegalStateException("모집을 시작할 수 없는 상태입니다.");
+        }
+        status = status.nextState();
     }
 
     protected Session(Long id, String title, CoverImage coverImage, LocalDateTime startDate, LocalDateTime endDate) {
