@@ -9,9 +9,9 @@
 * [텍스트와 이미지로 살펴보는 온라인 코드 리뷰 과정](https://github.com/next-step/nextstep-docs/tree/master/codereview)
 
 ## 수강신청 2단계 요구사항
-- [ ] `Course`는 기수 단위로 운영되며, 여러 개의 `Session`을 가질 수 있다.
-  - [ ] 해당 비즈니스 객체가 응집된 `Sessions` 일급 컬렉션을 만든다.
-- [ ] `Session`은 `startDate` 와 `endDate` 를 가진다.
+- [x] `Course`는 기수 단위로 운영되며, 여러 개의 `Session`을 가질 수 있다.
+  - [x] 해당 비즈니스 객체가 응집된 `Sessions` 일급 컬렉션을 만든다.
+- [x] `Session`은 `startDate` 와 `endDate` 를 가진다.
 - [ ] `Session`은 `CoverImage` 라는 강의 커버 이미지 정보를 가진다.
   - [ ] `CoverImage`의 용량은 1MB 이하여야 한다.
   - [ ] `CoverImage`의 확장자는 `gif, jpg (jpeg), png, svg` 이어야 한다.
