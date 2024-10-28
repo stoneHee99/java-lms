@@ -34,8 +34,10 @@ class CoverImageTest {
     @ParameterizedTest
     @ValueSource(strings = {"jpg", "png", "gif", "jpeg", "svg"})
     void createCoverImage_withAllowedExtension(String extension) throws IOException {
+        BufferedImage invalidImage = new BufferedImage(300, 200, BufferedImage.TYPE_INT_RGB);
         File validFile = new File(tempDirectory, "image." + extension);
         Files.write(validFile.toPath(), new byte[1024]);
+        ImageIO.write(invalidImage, extension, validFile);
 
         assertThatNoException().isThrownBy(() -> new CoverImage(validFile));
     }
@@ -60,4 +62,6 @@ class CoverImageTest {
         assertThatThrownBy(() -> new CoverImage(invalidFile))
                 .isInstanceOf(IllegalArgumentException.class);
     }
+
+    
 }
