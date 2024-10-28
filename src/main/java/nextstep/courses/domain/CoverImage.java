@@ -9,13 +9,21 @@ public class CoverImage {
     private final File imageFile;
 
     public CoverImage(File imageFile) {
-        valid(imageFile);
         this.imageFile = imageFile;
+        valid();
     }
 
-    private void valid(File imageFile) {
+    private void valid() {
+        validFileSize();
+    }
+
+    private void validFileSize() {
         if (imageFile.length() > MAX_FILE_SIZE) {
             throw new IllegalArgumentException("이미지 파일 크기는 1MB를 넘을 수 없습니다.");
         }
+    }
+
+    private void validFileExtension() {
+
     }
 }
