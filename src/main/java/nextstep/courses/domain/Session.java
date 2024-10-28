@@ -6,16 +6,17 @@ public abstract class Session {
 
     private final Long id;
 
-    private final String name;
+    private final String title;
 
-    private final LocalDateTime createDate;
+    private final LocalDateTime startDate;
 
     private final LocalDateTime endDate;
 
-    protected Session(Long id, String name, LocalDateTime createDate, LocalDateTime endDate) {
+    protected Session(Long id, String title, LocalDateTime startDate, LocalDateTime endDate) {
         this.id = id;
-        this.name = name;
-        this.createDate = createDate;
+        this.title = title;
+        this.price = price;
+        this.startDate = startDate;
         this.endDate = endDate;
     }
 }
