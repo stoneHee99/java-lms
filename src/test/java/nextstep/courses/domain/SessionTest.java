@@ -1,6 +1,8 @@
 package nextstep.courses.domain;
 
 import nextstep.payments.domain.Payment;
+import nextstep.users.domain.NsUser;
+import nextstep.users.domain.NsUserTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -47,7 +49,7 @@ class SessionTest {
                 LocalDateTime.now());
         session.startRecruitment();
 
-        session.enroll(new Payment());
+        session.enroll(new Payment(), NsUserTest.SANJIGI);
     }
 
     @DisplayName("강의 수강을 신청했을 때 모집 중이지 않은 경우 예외가 발생하는지")
@@ -58,7 +60,7 @@ class SessionTest {
                 LocalDateTime.now(),
                 LocalDateTime.now());
 
-        assertThatThrownBy(() -> session.enroll(new Payment()))
+        assertThatThrownBy(() -> session.enroll(new Payment(), NsUserTest.JAVAJIGI))
                 .isInstanceOf(UnsupportedOperationException.class);
     }
 }

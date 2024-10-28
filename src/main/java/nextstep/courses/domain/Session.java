@@ -1,8 +1,12 @@
 package nextstep.courses.domain;
 
 import nextstep.payments.domain.Payment;
+import nextstep.users.domain.NsUser;
 
+import java.io.File;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 public abstract class Session {
 
@@ -14,11 +18,13 @@ public abstract class Session {
 
     private final CoverImage coverImage;
 
+    protected final Set<NsUser> enrolledUsers = new HashSet<>();
+
     private final LocalDateTime startDate;
 
     private final LocalDateTime endDate;
 
-    public abstract void enroll(Payment payment);
+    public abstract void enroll(Payment payment, NsUser user);
 
     protected boolean canEnroll() {
         return SessionStatus.CanEnroll(status);
@@ -32,10 +38,10 @@ public abstract class Session {
         status = status.nextState();
     }
 
-    protected Session(Long id, String title, CoverImage coverImage, LocalDateTime startDate, LocalDateTime endDate) {
+    protected Session(Long id, String title, File imageFile, LocalDateTime startDate, LocalDateTime endDate) {
         this.id = id;
         this.title = title;
-        this.coverImage = coverImage;
+        this.coverImage = new CoverImage(imageFile);
         this.startDate = startDate;
         this.endDate = endDate;
     }
