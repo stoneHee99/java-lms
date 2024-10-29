@@ -36,5 +36,4 @@ public class Payment {
     public boolean isSamePrice(Long sessionPrice) {
         return Objects.equals(amount, sessionPrice);
     }
-
 }

@@ -14,11 +14,13 @@ public abstract class Session {
 
     private final String title;
 
+    private final long price;
+
     private SessionStatus status = SessionStatus.PREPARING;
 
     private final CoverImage coverImage;
 
-    protected final Set<NsUser> enrolledUsers = new HashSet<>();
+    private final Set<NsUser> enrolledUsers = new HashSet<>();
 
     private final LocalDateTime startDate;
 
@@ -26,23 +28,39 @@ public abstract class Session {
 
     public abstract void enroll(Payment payment, NsUser user);
 
-    protected boolean canEnroll() {
-        return SessionStatus.CanEnroll(status);
+    protected long getPrice() {
+        return price;
+    }
+
+    protected boolean isEnrollmentOpen() {
+        return SessionStatus.isEnrollmentOpen(status);
+    }
+
+    protected int getEnrolledUserCount() {
+        return enrolledUsers.size();
     }
 
     public void startRecruitment() {
-        if (!status.nextState()
-                .equals(SessionStatus.RECRUITING)) {
+        if (!status.nextState().equals(SessionStatus.RECRUITING)) {
             throw new IllegalStateException("모집을 시작할 수 없는 상태입니다.");
         }
-        status = status.nextState();
+        this.status = status.nextState();
     }
 
-    protected Session(Long id, String title, File imageFile, LocalDateTime startDate, LocalDateTime endDate) {
+    private Session(Long id, String title, long price, CoverImage image, LocalDateTime startDate, LocalDateTime endDate) {
         this.id = id;
         this.title = title;
-        this.coverImage = new CoverImage(imageFile);
+        this.price = price;
+        this.coverImage = image;
         this.startDate = startDate;
         this.endDate = endDate;
+    }
+
+    protected Session(Long id, String title, long price, File imageFile, LocalDateTime startDate, LocalDateTime endDate) {
+        this(id, title, price, new CoverImage(imageFile), startDate, endDate);
+    }
+
+    protected void enrollUser(NsUser user) {
+        enrolledUsers.add(user);
     }
 }

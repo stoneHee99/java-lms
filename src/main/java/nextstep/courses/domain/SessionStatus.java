@@ -20,7 +20,7 @@ public enum SessionStatus {
 
     public abstract SessionStatus nextState();
 
-    public static boolean CanEnroll(SessionStatus status) {
+    public static boolean isEnrollmentOpen(SessionStatus status) {
         return status == RECRUITING;
     }
 }

@@ -9,14 +9,18 @@ import java.time.LocalDateTime;
 public class FreeSession extends Session {
 
     public FreeSession(String title, File imageFile, LocalDateTime startDate, LocalDateTime endDate) {
-        super(0L, title, imageFile, startDate, endDate);
+        super(0L, title, 0, imageFile, startDate, endDate);
     }
 
     @Override
     public void enroll(Payment payment, NsUser user) {
-        if (!canEnroll() || !payment.isFree()) {
+        if (!canEnroll(payment)) {
             throw new UnsupportedOperationException("수강 신청이 불가능한 상태입니다");
         }
-        enrolledUsers.add(user);
+        enrollUser(user);
+    }
+
+    private boolean canEnroll(Payment payment) {
+        return (isEnrollmentOpen() && payment.isFree());
     }
 }

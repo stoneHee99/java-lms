@@ -1,7 +1,6 @@
 package nextstep.courses.domain;
 
 import nextstep.payments.domain.Payment;
-import nextstep.users.domain.NsUser;
 import nextstep.users.domain.NsUserTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,6 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class SessionTest {
@@ -49,7 +49,7 @@ class SessionTest {
                 LocalDateTime.now());
         session.startRecruitment();
 
-        session.enroll(new Payment(), NsUserTest.SANJIGI);
+        assertThatNoException().isThrownBy(() -> session.enroll(new Payment("id", 1L, 2L, 0L), NsUserTest.SANJIGI));
     }
 
     @DisplayName("강의 수강을 신청했을 때 모집 중이지 않은 경우 예외가 발생하는지")
@@ -60,7 +60,55 @@ class SessionTest {
                 LocalDateTime.now(),
                 LocalDateTime.now());
 
-        assertThatThrownBy(() -> session.enroll(new Payment(), NsUserTest.JAVAJIGI))
+        assertThatThrownBy(() -> session.enroll(new Payment("id", 1L, 2L, 0L), NsUserTest.JAVAJIGI))
+                .isInstanceOf(UnsupportedOperationException.class);
+    }
+
+    @DisplayName("유료 강의가 최대 수강 인원을 초과하지 않은 경우 수강 신청이 잘 되는지")
+    @Test
+    void enroll_whenNotExceedMaxEnrolledUserCount() throws IOException {
+        Session session = new PaidSession("자바지기와 함께하는 자바 LiveLecture",
+                5000L,
+                1,
+                validImageFile(),
+                LocalDateTime.now(),
+                LocalDateTime.now());
+
+        session.startRecruitment();
+
+        assertThatNoException().isThrownBy(() -> session.enroll(new Payment("id", 1L, 2L, 5000L), NsUserTest.JAVAJIGI));
+    }
+
+    @DisplayName("유료 강의가 최대 수강 인원을 초과한 경우 예외가 잘 발생하는지")
+    @Test
+    void enroll_whenExceedMaxEnrolledUserCount() throws IOException {
+        Session session = new PaidSession("자바지기와 함께하는 자바 LiveLecture",
+                5000L,
+                1,
+                validImageFile(),
+                LocalDateTime.now(),
+                LocalDateTime.now());
+
+        session.startRecruitment();
+        session.enroll(new Payment("id", 1L, 2L, 5000L), NsUserTest.SANJIGI);
+
+        assertThatThrownBy(() -> session.enroll(new Payment("id", 1L, 2L, 5000L), NsUserTest.JAVAJIGI))
+                .isInstanceOf(UnsupportedOperationException.class);
+    }
+
+    @DisplayName("유료 강의가 결제 금액과 수강료가 일치하지 않는 경우 예외가 잘 발생하는지")
+    @Test
+    void enroll_whenNotMatchPrice() throws IOException {
+        Session session = new PaidSession("자바지기와 함께하는 자바 LiveLecture",
+                5000L,
+                1,
+                validImageFile(),
+                LocalDateTime.now(),
+                LocalDateTime.now());
+
+        session.startRecruitment();
+
+        assertThatThrownBy(() -> session.enroll(new Payment("id", 1L, 2L, 1000L), NsUserTest.JAVAJIGI))
                 .isInstanceOf(UnsupportedOperationException.class);
     }
 }
