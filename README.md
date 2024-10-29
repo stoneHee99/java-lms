@@ -16,10 +16,10 @@
   - [x] `CoverImage`의 용량은 1MB 이하여야 한다.
   - [x] `CoverImage`의 확장자는 `gif, jpg (jpeg), png, svg` 이어야 한다.
   - [x] `CoverImage`는 `width`가 300px 이상, `height`는 200px 이상이어야 하며, `width와 height의 비율`은 3:2 여야 한다.
-- [ ] `Session`은 `FreeSession(무료강의)`과 `PaidSession(유료강의)`으로 나뉜다.
-  - [ ] `FreeSession`은 최대 수강 인원 제한이 없다. 하지만 `PaidSession`은 제한이 있다.
-  - [ ] `PaidSession`은 수강생이 결체한 금액과 수강료가 일치할 때만, 수강신청이 가능하다.
-  - [ ] 이외의 비즈니스 로직은 차이나는 부분보다는 동일한 부분이 더 많으므로 `추상클래스`의 적용을 고려한다.
-- [ ] `Session`은 `SessionStatus`를 가진다.
-   - [ ] `SessionStatus`는 `PREPAREING, RECRUITING, CLOSED` 세 가지 상태를 가진다.
-   - [ ] 수강신청은 상태가 `RECRUITING` 일 때만 가능하다.
+- [x] `Session`은 `FreeSession(무료강의)`과 `PaidSession(유료강의)`으로 나뉜다.
+  - [x] `FreeSession`은 최대 수강 인원 제한이 없다. 하지만 `PaidSession`은 제한이 있다.
+  - [x] `PaidSession`은 수강생이 결체한 금액과 수강료가 일치할 때만, 수강신청이 가능하다.
+  - [x] 이외의 비즈니스 로직은 차이나는 부분보다는 동일한 부분이 더 많으므로 `추상클래스`의 적용을 고려한다.
+- [x] `Session`은 `SessionStatus`를 가진다.
+   - [x] `SessionStatus`는 `PREPAREING, RECRUITING, CLOSED` 세 가지 상태를 가진다.
+   - [x] 수강신청은 상태가 `RECRUITING` 일 때만 가능하다.
