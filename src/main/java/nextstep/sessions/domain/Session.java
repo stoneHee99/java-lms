@@ -47,7 +47,7 @@ public abstract class Session {
         this.status = status.nextState();
     }
 
-    private Session(Long id, String title, long price, CoverImage image, LocalDateTime startDate, LocalDateTime endDate) {
+    Session(Long id, String title, long price, CoverImage image, LocalDateTime startDate, LocalDateTime endDate) {
         this.id = id;
         this.title = title;
         this.price = price;
@@ -56,9 +56,6 @@ public abstract class Session {
         this.endDate = endDate;
     }
 
-    protected Session(Long id, String title, long price, File imageFile, LocalDateTime startDate, LocalDateTime endDate) {
-        this(id, title, price, new CoverImage(imageFile), startDate, endDate);
-    }
 
     protected void enrollUser(NsUser user) {
         enrolledUsers.add(user);

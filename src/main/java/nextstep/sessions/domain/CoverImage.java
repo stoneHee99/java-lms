@@ -1,9 +1,5 @@
 package nextstep.sessions.domain;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.Set;
 
 public class CoverImage {
@@ -15,61 +11,52 @@ public class CoverImage {
     private static final int MIN_HEIGHT = 200;
     private static final double ASPECT_RATIO = 3.0 / 2.0;
 
-    private final File imageFile;
+    private final int fileSize;
+    private final String fileExtension;
+    private final int width;
+    private final int height;
 
-    public CoverImage(File imageFile) {
-        this.imageFile = imageFile;
-        valid();
+    public CoverImage() {
+        this(100, "jpg", 300, 200);
     }
 
-    private void valid() {
-        validFileSize();
-        validFileExtension();
+    public CoverImage(int fileSize, String fileExtension, int width, int height) {
+        this.fileSize = fileSize;
+        this.fileExtension = fileExtension.toLowerCase();
+        this.width = width;
+        this.height = height;
+        validate();
+    }
+
+    private void validate() {
+        validateFileSize();
+        validateFileExtension();
         if (!isVectorImage()) {
-            validImageDimension();
+            validateImageDimensions();
         }
     }
 
-    private void validFileSize() {
-        if (imageFile.length() > MAX_FILE_SIZE) {
+    private void validateFileSize() {
+        if (fileSize > MAX_FILE_SIZE) {
             throw new IllegalArgumentException("이미지 파일 크기는 1MB를 넘을 수 없습니다.");
         }
     }
 
-    private void validFileExtension() {
-        String extension = getFileExtension();
-        if (!ALLOWED_EXTENSION.contains(extension)) {
+    private void validateFileExtension() {
+        if (!ALLOWED_EXTENSION.contains(fileExtension)) {
             throw new IllegalArgumentException("허용되지 않는 이미지 확장자입니다.");
         }
     }
 
-    private String getFileExtension() {
-        String fileName = imageFile.getName();
-        return fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
-    }
-
     private boolean isVectorImage() {
-        return getFileExtension().equals(VECTOR_EXTENSION);
+        return fileExtension.equals(VECTOR_EXTENSION);
     }
 
-    private void validImageDimension() {
-        try {
-            BufferedImage image = ImageIO.read(imageFile);
-            validImageSize(image);
-            validImageRatio(image);
-        } catch (IOException e) {
-            throw new IllegalArgumentException("이미지 파일이 손상되었습니다.");
-        }
-    }
-
-    private void validImageSize(BufferedImage image) {
-        if (image.getWidth() < MIN_WIDTH || image.getHeight() < MIN_HEIGHT) {
+    private void validateImageDimensions() {
+        if (width < MIN_WIDTH || height < MIN_HEIGHT) {
             throw new IllegalArgumentException("이미지 크기는 최소 300 x 200 이상이어야 합니다.");
         }
-    }
-
-    private void validImageRatio(BufferedImage image) {
-        double ratio = (double) image.getWidth() / image.getHeight();
+        double ratio = (double) width / height;
         if (ratio != ASPECT_RATIO) {
             throw new IllegalArgumentException("이미지 비율은 3:2 여야 합니다.");
         }

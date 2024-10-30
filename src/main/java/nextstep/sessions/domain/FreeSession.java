@@ -3,13 +3,12 @@ package nextstep.sessions.domain;
 import nextstep.payments.domain.Payment;
 import nextstep.users.domain.NsUser;
 
-import java.io.File;
 import java.time.LocalDateTime;
 
 public class FreeSession extends Session {
 
-    public FreeSession(String title, File imageFile, LocalDateTime startDate, LocalDateTime endDate) {
-        super(0L, title, 0, imageFile, startDate, endDate);
+    public FreeSession(String title, CoverImage coverImage, LocalDateTime startDate, LocalDateTime endDate) {
+        super(0L, title, 0, coverImage, startDate, endDate);
     }
 
     @Override
