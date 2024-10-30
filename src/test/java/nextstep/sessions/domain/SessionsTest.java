@@ -15,7 +15,7 @@ class SessionsTest {
 
     @DisplayName("Sessions가 잘 생성되는지")
     @Test
-    void testCreate() throws IOException {
+    void testCreate() throws {
         List<Session> sessionList = List.of(
                 new FreeSession("자바지기와 함께하는 자바 LiveLecture",
                         new CoverImage(),
@@ -34,7 +34,7 @@ class SessionsTest {
 
     @DisplayName("Sessions에서 꺼낸 컬렉션 수정시 예외가 발생하는지")
     @Test
-    void testUnmodifiableList() throws IOException {
+    void testUnmodifiableList() {
         List<Session> sessionList = List.of(
                 new FreeSession("자바지기와 함께하는 자바 LiveLecture",
                         new CoverImage(),

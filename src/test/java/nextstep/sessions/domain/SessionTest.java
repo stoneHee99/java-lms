@@ -15,7 +15,7 @@ class SessionTest {
 
     @DisplayName("모집 중인 강의에 강의 모집 시작을 요청했을 때 예외가 발생하는지")
     @Test
-    void startRecruitment_whenRecruiting() throws IOException {
+    void startRecruitment_whenRecruiting() {
         Session session = new FreeSession("자바지기와 함께하는 자바 LiveLecture",
                 new CoverImage(),
                 LocalDateTime.now(),
@@ -28,7 +28,7 @@ class SessionTest {
 
     @DisplayName("강의 수강을 신청했을 때 모집 중인 경우 예외가 발생하지 않는지")
     @Test
-    void enroll_whenRecruiting() throws IOException {
+    void enroll_whenRecruiting() {
         Session session = new FreeSession("자바지기와 함께하는 자바 LiveLecture",
                 new CoverImage(),
                 LocalDateTime.now(),
@@ -40,7 +40,7 @@ class SessionTest {
 
     @DisplayName("강의 수강을 신청했을 때 모집 중이지 않은 경우 예외가 발생하는지")
     @Test
-    void enroll_whenNotRecruiting() throws IOException {
+    void enroll_whenNotRecruiting() {
         Session session = new FreeSession("자바지기와 함께하는 자바 LiveLecture",
                 new CoverImage(),
                 LocalDateTime.now(),
@@ -52,7 +52,7 @@ class SessionTest {
 
     @DisplayName("유료 강의가 최대 수강 인원을 초과하지 않은 경우 수강 신청이 잘 되는지")
     @Test
-    void enroll_whenNotExceedMaxEnrolledUserCount() throws IOException {
+    void enroll_whenNotExceedMaxEnrolledUserCount() {
         Session session = new PaidSession("자바지기와 함께하는 자바 LiveLecture",
                 5000L,
                 1,
@@ -67,7 +67,7 @@ class SessionTest {
 
     @DisplayName("유료 강의가 최대 수강 인원을 초과한 경우 예외가 잘 발생하는지")
     @Test
-    void enroll_whenExceedMaxEnrolledUserCount() throws IOException {
+    void enroll_whenExceedMaxEnrolledUserCount() {
         Session session = new PaidSession("자바지기와 함께하는 자바 LiveLecture",
                 5000L,
                 1,
@@ -84,7 +84,7 @@ class SessionTest {
 
     @DisplayName("유료 강의가 결제 금액과 수강료가 일치하지 않는 경우 예외가 잘 발생하는지")
     @Test
-    void enroll_whenNotMatchPrice() throws IOException {
+    void enroll_whenNotMatchPrice() {
         Session session = new PaidSession("자바지기와 함께하는 자바 LiveLecture",
                 5000L,
                 1,
