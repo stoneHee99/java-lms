@@ -1,7 +1,7 @@
-package nextstep.courses.infrastructure;
+package nextstep.sessions.infrastructure;
 
-import nextstep.courses.domain.Session;
-import nextstep.courses.domain.SessionRepository;
+import nextstep.sessions.domain.Session;
+import nextstep.sessions.domain.SessionRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;

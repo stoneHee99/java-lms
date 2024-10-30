@@ -1,4 +1,4 @@
-package nextstep.courses.domain;
+package nextstep.sessions.domain;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
