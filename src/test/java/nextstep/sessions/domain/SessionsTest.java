@@ -15,7 +15,7 @@ class SessionsTest {
 
     @DisplayName("Sessions가 잘 생성되는지")
     @Test
-    void testCreate() throws {
+    void testCreate() {
         List<Session> sessionList = List.of(
                 new FreeSession("자바지기와 함께하는 자바 LiveLecture",
                         new CoverImage(),
