@@ -14,7 +14,7 @@ public class FreeSession extends Session {
         if (!canEnroll()) {
             throw new UnsupportedOperationException("수강 신청이 불가능한 상태입니다");
         }
-        enrollUser(user);
+        enroll(new Enrollment(0L, this, user, LocalDateTime.now()));
     }
 
     private boolean canEnroll() {

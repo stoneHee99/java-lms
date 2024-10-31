@@ -18,7 +18,7 @@ public abstract class Session {
 
     private final CoverImage coverImage;
 
-    private final Set<NsUser> enrolledUsers = new HashSet<>();
+    private final Set<Enrollment> enrollments = new HashSet<>();
 
     private final DateRange sessionDateRange;
 
@@ -27,7 +27,7 @@ public abstract class Session {
     }
 
     protected int getEnrolledUserCount() {
-        return enrolledUsers.size();
+        return enrollments.size();
     }
 
     public void startRecruitment() {
@@ -46,8 +46,8 @@ public abstract class Session {
     }
 
 
-    protected void enrollUser(NsUser user) {
-        enrolledUsers.add(user);
+    protected void enroll(Enrollment enrollment) {
+        enrollments.add(enrollment);
     }
 
     public SessionType getSessionType() {

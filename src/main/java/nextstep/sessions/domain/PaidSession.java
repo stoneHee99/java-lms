@@ -20,7 +20,7 @@ public class PaidSession extends Session {
         if (!canEnroll(payment)) {
             throw new UnsupportedOperationException("수강 신청이 불가능한 상태입니다");
         }
-        enrollUser(user);
+        enroll(new Enrollment(0L, this, user, LocalDateTime.now()));
     }
 
     private boolean canEnroll(Payment payment) {
