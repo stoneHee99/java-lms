@@ -1,5 +1,7 @@
 package nextstep.sessions.service;
 
+import nextstep.sessions.domain.FreeSession;
+import nextstep.sessions.domain.PaidSession;
 import nextstep.sessions.domain.Session;
 import nextstep.sessions.domain.SessionRepository;
 import nextstep.payments.domain.Payment;
@@ -10,6 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+
+import static nextstep.sessions.domain.SessionType.FREE;
+import static nextstep.sessions.domain.SessionType.PAID;
 
 @Service("enrollmentService")
 public class EnrollmentService {
@@ -24,8 +29,15 @@ public class EnrollmentService {
         Session session = sessionRepository.findById(sessionId)
                 .orElseThrow(NotFoundException::new);
 
-        Payment payment = paymentService.getPaymentHistory(loginUser, sessionId);
+        switch (session.getSessionType()) {
+            case PAID:
+                Payment payment = paymentService.getPaymentHistory(loginUser, sessionId);
+                ((PaidSession) session).enroll(payment, loginUser);
+                break;
+            case FREE:
+                ((FreeSession) session).enroll(loginUser);
+                break;
+        }
 
-        session.enroll(payment, loginUser);
     }
 }

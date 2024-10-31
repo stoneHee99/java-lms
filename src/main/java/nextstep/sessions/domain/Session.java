@@ -1,9 +1,7 @@
 package nextstep.sessions.domain;
 
-import nextstep.payments.domain.Payment;
 import nextstep.users.domain.NsUser;
 
-import java.io.File;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -14,7 +12,7 @@ public abstract class Session {
 
     private final String title;
 
-    private final long price;
+    private final SessionType sessionType;
 
     private SessionStatus status = SessionStatus.PREPARING;
 
@@ -25,12 +23,6 @@ public abstract class Session {
     private final LocalDateTime startDate;
 
     private final LocalDateTime endDate;
-
-    public abstract void enroll(Payment payment, NsUser user);
-
-    protected long getPrice() {
-        return price;
-    }
 
     protected boolean isEnrollmentOpen() {
         return SessionStatus.isEnrollmentOpen(status);
@@ -47,10 +39,10 @@ public abstract class Session {
         this.status = status.nextState();
     }
 
-    Session(Long id, String title, long price, CoverImage image, LocalDateTime startDate, LocalDateTime endDate) {
+    Session(Long id, String title, SessionType sessionType, CoverImage image, LocalDateTime startDate, LocalDateTime endDate) {
         this.id = id;
         this.title = title;
-        this.price = price;
+        this.sessionType = sessionType;
         this.coverImage = image;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -59,5 +51,9 @@ public abstract class Session {
 
     protected void enrollUser(NsUser user) {
         enrolledUsers.add(user);
+    }
+
+    public SessionType getSessionType() {
+        return sessionType;
     }
 }
