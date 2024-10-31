@@ -13,9 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 
-import static nextstep.sessions.domain.SessionType.FREE;
-import static nextstep.sessions.domain.SessionType.PAID;
-
 @Service("enrollmentService")
 public class EnrollmentService {
     @Resource(name = "paymentService")

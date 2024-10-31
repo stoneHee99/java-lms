@@ -20,9 +20,7 @@ public abstract class Session {
 
     private final Set<NsUser> enrolledUsers = new HashSet<>();
 
-    private final LocalDateTime startDate;
-
-    private final LocalDateTime endDate;
+    private final DateRange sessionDateRange;
 
     protected boolean isEnrollmentOpen() {
         return SessionStatus.isEnrollmentOpen(status);
@@ -44,8 +42,7 @@ public abstract class Session {
         this.title = title;
         this.sessionType = sessionType;
         this.coverImage = image;
-        this.startDate = startDate;
-        this.endDate = endDate;
+        this.sessionDateRange = new DateRange(startDate, endDate);
     }
 
 
