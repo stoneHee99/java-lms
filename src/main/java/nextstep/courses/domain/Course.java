@@ -1,5 +1,7 @@
 package nextstep.courses.domain;
 
+import nextstep.sessions.domain.Sessions;
+
 import java.time.LocalDateTime;
 
 public class Course {
@@ -8,6 +10,8 @@ public class Course {
     private String title;
 
     private Long creatorId;
+
+    private Sessions sessions;
 
     private LocalDateTime createdAt;
 
@@ -26,6 +30,7 @@ public class Course {
         this.creatorId = creatorId;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.sessions = new Sessions();
     }
 
     public String getTitle() {

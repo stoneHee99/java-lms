@@ -8,13 +8,18 @@
 ## 온라인 코드 리뷰 과정
 * [텍스트와 이미지로 살펴보는 온라인 코드 리뷰 과정](https://github.com/next-step/nextstep-docs/tree/master/codereview)
 
-## 수강신청 1단계 요구사항
-- [x] `QnaService`의 `deleteQuestion` 메서드의 단위 테스트 가능한 코드를 도메인 모델로 옮긴다.
-    - [x] 이 때, TDD를 기반으로 리팩토링 한다.
-- [x] 질문 삭제하기 요구사항을 모두 만족하여야 한다.
-    - [x] 질문 삭제하기는 `soft delete` 기반의 삭제이다. (실제 삭제가 아닌 상태 변경)
-    - [x] 로그인 한 사용자와 질문한 사람이 같은 경우에만 삭제 가능하다.
-    - [x] 답변이 없는 경우 삭제가 가능하다.
-    - [x] 질문자와 답변글의 모든 답변자가 같은 경우 삭제가 가능하다.
-    - [x] 질문자와 답변자가 다른 경우 답변을 삭제할 수 없다.
-    - [x] 질문과 답변 삭제 이력에 대한 정보를 `DeleteHistory`를 활용해 저장한다.
+## 수강신청 2단계 요구사항
+- [x] `Course`는 기수 단위로 운영되며, 여러 개의 `Session`을 가질 수 있다.
+  - [x] 해당 비즈니스 객체가 응집된 `Sessions` 일급 컬렉션을 만든다.
+- [x] `Session`은 `startDate` 와 `endDate` 를 가진다.
+- [x] `Session`은 `CoverImage` 라는 강의 커버 이미지 정보를 가진다.
+  - [x] `CoverImage`의 용량은 1MB 이하여야 한다.
+  - [x] `CoverImage`의 확장자는 `gif, jpg (jpeg), png, svg` 이어야 한다.
+  - [x] `CoverImage`는 `width`가 300px 이상, `height`는 200px 이상이어야 하며, `width와 height의 비율`은 3:2 여야 한다.
+- [x] `Session`은 `FreeSession(무료강의)`과 `PaidSession(유료강의)`으로 나뉜다.
+  - [x] `FreeSession`은 최대 수강 인원 제한이 없다. 하지만 `PaidSession`은 제한이 있다.
+  - [x] `PaidSession`은 수강생이 결체한 금액과 수강료가 일치할 때만, 수강신청이 가능하다.
+  - [x] 이외의 비즈니스 로직은 차이나는 부분보다는 동일한 부분이 더 많으므로 `추상클래스`의 적용을 고려한다.
+- [x] `Session`은 `SessionStatus`를 가진다.
+   - [x] `SessionStatus`는 `PREPAREING, RECRUITING, CLOSED` 세 가지 상태를 가진다.
+   - [x] 수강신청은 상태가 `RECRUITING` 일 때만 가능하다.
