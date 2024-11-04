@@ -50,7 +50,11 @@ public abstract class Session {
 
 
     protected void enroll(Enrollment enrollment) {
+        int currentEnrolledUserCount = enrollments.size();
         enrollments.add(enrollment);
+        if (currentEnrolledUserCount == enrollments.size()) {
+            throw new IllegalArgumentException("이미 수강 신청한 사용자입니다.");
+        }
     }
 
     protected Long getId() {
