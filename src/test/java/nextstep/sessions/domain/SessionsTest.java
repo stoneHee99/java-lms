@@ -17,11 +17,13 @@ class SessionsTest {
     @Test
     void testCreate() {
         List<Session> sessionList = List.of(
-                new FreeSession("자바지기와 함께하는 자바 LiveLecture",
+                new FreeSession(0L, 0L,
+                        "자바지기와 함께하는 자바 LiveLecture",
                         new CoverImage(300, "jpg", 300, 200),
                         LocalDateTime.now(),
                         LocalDateTime.now()),
-                new PaidSession(  "우아한형제들과 함께하는 TDD LiveLecture",
+                new PaidSession(1L, 1L,
+                        "우아한형제들과 함께하는 TDD LiveLecture",
                         200000,
                         20,
                         new CoverImage(300, "jpg", 300, 200),
@@ -36,11 +38,13 @@ class SessionsTest {
     @Test
     void testUnmodifiableList() {
         List<Session> sessionList = List.of(
-                new FreeSession("자바지기와 함께하는 자바 LiveLecture",
+                new FreeSession(0L, 0L,
+                        "자바지기와 함께하는 자바 LiveLecture",
                         new CoverImage(300, "jpg", 300, 200),
                         LocalDateTime.now(),
                         LocalDateTime.now()),
-                new PaidSession(  "우아한형제들과 함께하는 TDD LiveLecture",
+                new PaidSession(1L, 1L,
+                        "우아한형제들과 함께하는 TDD LiveLecture",
                         200000,
                         20,
                         new CoverImage(300, "jpg", 300, 200),
@@ -52,7 +56,8 @@ class SessionsTest {
         List<Session> sessionsList = sessions.getSessions();
         assertThat(sessionsList).isNotNull();
         assertThatThrownBy(() -> sessionsList.add(
-                new FreeSession("자바지기와 함께하는 자바 LiveLecture",
+                new FreeSession(0L, 0L,
+                        "자바지기와 함께하는 자바 LiveLecture",
                         new CoverImage(300, "jpg", 300, 200),
                         LocalDateTime.now(),
                         LocalDateTime.now())))

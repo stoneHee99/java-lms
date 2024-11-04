@@ -10,8 +10,8 @@ public class PaidSession extends Session {
     private final long price;
     private final int maxParticipants;
 
-    public PaidSession(String title, long price, int maxParticipants, CoverImage coverImage, LocalDateTime startDate, LocalDateTime endDate) {
-        super(0L, 0L, title, SessionType.PAID, coverImage, startDate, endDate);
+    public PaidSession(Long id, Long courseId, String title, long price, int maxParticipants, CoverImage coverImage, LocalDateTime startDate, LocalDateTime endDate) {
+        super(id, courseId, title, SessionType.PAID, coverImage, startDate, endDate);
         this.price = price;
         this.maxParticipants = maxParticipants;
     }

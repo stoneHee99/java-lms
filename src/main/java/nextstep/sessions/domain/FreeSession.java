@@ -6,8 +6,8 @@ import java.time.LocalDateTime;
 
 public class FreeSession extends Session {
 
-    public FreeSession(String title, CoverImage coverImage, LocalDateTime startDate, LocalDateTime endDate) {
-        super(0L, 0L, title, SessionType.FREE, coverImage, startDate, endDate);
+    public FreeSession(Long id, Long courseId, String title, CoverImage coverImage, LocalDateTime startDate, LocalDateTime endDate) {
+        super(id, courseId, title, SessionType.FREE, coverImage, startDate, endDate);
     }
 
     public void enroll(NsUser user) {
