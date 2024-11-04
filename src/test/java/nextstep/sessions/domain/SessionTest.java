@@ -78,7 +78,7 @@ class SessionTest {
         session.enroll(new Payment("id", 1L, 2L, 5000L), NsUserTest.SANJIGI);
 
         assertThatThrownBy(() -> session.enroll(new Payment("id", 1L, 2L, 5000L), NsUserTest.JAVAJIGI))
-                .isInstanceOf(UnsupportedOperationException.class);
+                .isInstanceOf(IllegalStateException.class);
     }
 
     @DisplayName("유료 강의가 결제 금액과 수강료가 일치하지 않는 경우 예외가 잘 발생하는지")
@@ -94,6 +94,6 @@ class SessionTest {
         session.startRecruitment();
 
         assertThatThrownBy(() -> session.enroll(new Payment("id", 1L, 2L, 1000L), NsUserTest.JAVAJIGI))
-                .isInstanceOf(UnsupportedOperationException.class);
+                .isInstanceOf(IllegalStateException.class);
     }
 }
