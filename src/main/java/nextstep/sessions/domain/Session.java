@@ -10,6 +10,8 @@ public abstract class Session {
 
     private final Long id;
 
+    private final Long courseId;
+
     private final String title;
 
     private final SessionType sessionType;
@@ -37,8 +39,9 @@ public abstract class Session {
         this.status = status.nextState();
     }
 
-    Session(Long id, String title, SessionType sessionType, CoverImage image, LocalDateTime startDate, LocalDateTime endDate) {
+    Session(Long id, Long courseId, String title, SessionType sessionType, CoverImage image, LocalDateTime startDate, LocalDateTime endDate) {
         this.id = id;
+        this.courseId = courseId;
         this.title = title;
         this.sessionType = sessionType;
         this.coverImage = image;
@@ -48,6 +51,10 @@ public abstract class Session {
 
     protected void enroll(Enrollment enrollment) {
         enrollments.add(enrollment);
+    }
+
+    protected Long getId() {
+        return id;
     }
 
     public SessionType getSessionType() {

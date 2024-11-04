@@ -7,13 +7,13 @@ import java.time.LocalDateTime;
 public class Enrollment {
 
     private final Long id;
-    private final Session session;
+    private final Long sessionId;
     private final NsUser user;
     private final LocalDateTime enrolledAt;
 
-    public Enrollment(Long id, Session session, NsUser user, LocalDateTime enrolledAt) {
+    public Enrollment(Long id, Long sessionId, NsUser user, LocalDateTime enrolledAt) {
         this.id = id;
-        this.session = session;
+        this.sessionId = sessionId;
         this.user = user;
         this.enrolledAt = enrolledAt;
     }
