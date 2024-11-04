@@ -18,7 +18,7 @@ public class PaidSession extends Session {
 
     public void enroll(Payment payment, NsUser user) {
         if (!canEnroll(payment)) {
-            throw new UnsupportedOperationException("수강 신청이 불가능한 상태입니다");
+            throw new IllegalStateException("수강 신청이 불가능한 상태입니다");
         }
         enroll(new Enrollment(0L, this.getId(), user, LocalDateTime.now()));
     }
