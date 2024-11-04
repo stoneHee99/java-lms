@@ -15,10 +15,6 @@ public class CoverImage {
     private final int width;
     private final int height;
 
-    public CoverImage() {
-        this(100, "jpg", 300, 200);
-    }
-
     public CoverImage(int fileSize, String fileExtension, int width, int height) {
         this.fileSize = fileSize;
         this.fileExtension = CoverImageExtension.parseExtension(fileExtension);

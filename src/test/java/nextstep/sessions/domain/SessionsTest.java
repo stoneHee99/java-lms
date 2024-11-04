@@ -18,13 +18,13 @@ class SessionsTest {
     void testCreate() {
         List<Session> sessionList = List.of(
                 new FreeSession("자바지기와 함께하는 자바 LiveLecture",
-                        new CoverImage(),
+                        new CoverImage(300, "jpg", 300, 200),
                         LocalDateTime.now(),
                         LocalDateTime.now()),
                 new PaidSession(  "우아한형제들과 함께하는 TDD LiveLecture",
                         200000,
                         20,
-                        new CoverImage(),
+                        new CoverImage(300, "jpg", 300, 200),
                         LocalDateTime.now(),
                         LocalDateTime.now())
         );
@@ -37,13 +37,13 @@ class SessionsTest {
     void testUnmodifiableList() {
         List<Session> sessionList = List.of(
                 new FreeSession("자바지기와 함께하는 자바 LiveLecture",
-                        new CoverImage(),
+                        new CoverImage(300, "jpg", 300, 200),
                         LocalDateTime.now(),
                         LocalDateTime.now()),
                 new PaidSession(  "우아한형제들과 함께하는 TDD LiveLecture",
                         200000,
                         20,
-                        new CoverImage(),
+                        new CoverImage(300, "jpg", 300, 200),
                         LocalDateTime.now(),
                         LocalDateTime.now())
         );
@@ -53,7 +53,7 @@ class SessionsTest {
         assertThat(sessionsList).isNotNull();
         assertThatThrownBy(() -> sessionsList.add(
                 new FreeSession("자바지기와 함께하는 자바 LiveLecture",
-                        new CoverImage(),
+                        new CoverImage(300, "jpg", 300, 200),
                         LocalDateTime.now(),
                         LocalDateTime.now())))
                 .isInstanceOf(UnsupportedOperationException.class);

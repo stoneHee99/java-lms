@@ -16,7 +16,7 @@ class SessionTest {
     @Test
     void startRecruitment_whenRecruiting() {
         Session session = new FreeSession("자바지기와 함께하는 자바 LiveLecture",
-                new CoverImage(),
+                new CoverImage(300, "jpg", 300, 200),
                 LocalDateTime.now(),
                 LocalDateTime.now());
 
@@ -29,7 +29,7 @@ class SessionTest {
     @Test
     void enroll_whenRecruiting() {
         FreeSession session = new FreeSession("자바지기와 함께하는 자바 LiveLecture",
-                new CoverImage(),
+                new CoverImage(300, "jpg", 300, 200),
                 LocalDateTime.now(),
                 LocalDateTime.now());
         session.startRecruitment();
@@ -41,7 +41,7 @@ class SessionTest {
     @Test
     void enroll_whenNotRecruiting() {
         FreeSession session = new FreeSession("자바지기와 함께하는 자바 LiveLecture",
-                new CoverImage(),
+                new CoverImage(300, "jpg", 300, 200),
                 LocalDateTime.now(),
                 LocalDateTime.now());
 
@@ -55,7 +55,7 @@ class SessionTest {
         PaidSession session = new PaidSession("자바지기와 함께하는 자바 LiveLecture",
                 5000L,
                 1,
-                new CoverImage(),
+                new CoverImage(300, "jpg", 300, 200),
                 LocalDateTime.now(),
                 LocalDateTime.now());
 
@@ -70,7 +70,7 @@ class SessionTest {
         PaidSession session = new PaidSession("자바지기와 함께하는 자바 LiveLecture",
                 5000L,
                 1,
-                new CoverImage(),
+                new CoverImage(300, "jpg", 300, 200),
                 LocalDateTime.now(),
                 LocalDateTime.now());
 
@@ -87,7 +87,7 @@ class SessionTest {
         PaidSession session = new PaidSession("자바지기와 함께하는 자바 LiveLecture",
                 5000L,
                 1,
-                new CoverImage(),
+                new CoverImage(300, "jpg", 300, 200),
                 LocalDateTime.now(),
                 LocalDateTime.now());
 
