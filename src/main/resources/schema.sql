@@ -67,8 +67,8 @@ create table session (
     status varchar(20) not null default 'PREPARING',
     start_date timestamp not null,
     end_date timestamp not null,
-    primary key (id),
-    foreign key (course_id) references course(id)
+    price bigint,
+    max_participants int
 );
 
 create table cover_image (
@@ -82,10 +82,3 @@ create table cover_image (
     foreign key (session_id) references session(id)
 );
 
-create table paid_session_info (
-    session_id bigint not null,
-    price bigint not null,
-    max_participants int not null,
-    primary key (session_id),
-    foreign key (session_id) references session(id)
-);

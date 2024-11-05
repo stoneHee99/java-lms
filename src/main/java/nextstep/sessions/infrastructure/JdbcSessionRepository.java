@@ -23,12 +23,10 @@ public class JdbcSessionRepository implements SessionRepository {
     @Override
     public Optional<Session> findById(Long id) {
         String sql = "SELECT s.id, s.course_id, s.title, s.session_type, s.status, " +
-                "s.start_date, s.end_date, " +
-                "c.id as cover_id, c.file_size, c.file_extension, c.width, c.height, " +
-                "p.price, p.max_participants " +
+                "s.start_date, s.end_date, s.price, s.max_participants, " +
+                "c.id as cover_id, c.file_size, c.file_extension, c.width, c.height " +
                 "FROM session s " +
                 "INNER JOIN cover_image c ON s.id = c.session_id " +
-                "LEFT JOIN paid_session_info p ON s.id = p.session_id " +
                 "WHERE s.id = ?";
 
         try {
