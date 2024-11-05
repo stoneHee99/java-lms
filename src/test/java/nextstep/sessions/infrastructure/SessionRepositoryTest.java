@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @JdbcTest
 class SessionRepositoryTest {
@@ -45,8 +46,11 @@ class SessionRepositoryTest {
 
         assertThat(session).isPresent();
         Session foundSession = session.get();
-        assertThat(foundSession.getSessionType()).isEqualTo(SessionType.FREE);
-        assertThat(foundSession).isInstanceOf(FreeSession.class);
+
+        assertAll(
+                () -> assertThat(foundSession.getSessionType()).isEqualTo(SessionType.FREE),
+                () -> assertThat(foundSession).isInstanceOf(FreeSession.class)
+        );
         LOGGER.debug("Session: {}", foundSession);
     }
 }

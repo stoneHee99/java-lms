@@ -68,7 +68,9 @@ create table session (
     start_date timestamp not null,
     end_date timestamp not null,
     price bigint,
-    max_participants int
+    max_participants int,
+    primary key (id),
+    foreign key (course_id) references course(id)
 );
 
 create table cover_image (
