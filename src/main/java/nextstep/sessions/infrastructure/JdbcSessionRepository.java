@@ -4,11 +4,11 @@ import nextstep.sessions.domain.*;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -25,35 +25,45 @@ public class JdbcSessionRepository implements SessionRepository {
         String sql = "INSERT INTO session (course_id, title, session_type, status, start_date, end_date, price, max_participants) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
+        KeyHolder keyHolder = new GeneratedKeyHolder();
         DateRange dateRange = session.getSessionDateRange();
 
-        int result = jdbcTemplate.update(sql,
-                session.getCourseId(),
-                session.getTitle(),
-                session.getSessionType().name(),
-                session.getStatus(),
-                dateRange.getStartDate(),
-                dateRange.getEndDate(),
-                session instanceof PaidSession ? ((PaidSession) session).getPrice() : null,
-                session instanceof PaidSession ? ((PaidSession) session).getMaxParticipants() : null
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setLong(1, session.getCourseId());
+            ps.setString(2, session.getTitle());
+            ps.setString(3, session.getSessionType().name());
+            ps.setString(4, session.getStatus());
+            ps.setTimestamp(5, Timestamp.valueOf(dateRange.getStartDate()));
+            ps.setTimestamp(6, Timestamp.valueOf(dateRange.getEndDate()));
+
+            if (session instanceof PaidSession) {
+                PaidSession paidSession = (PaidSession) session;
+                ps.setLong(7, paidSession.getPrice());
+                ps.setInt(8, paidSession.getMaxParticipants());
+            } else {
+                ps.setNull(7, java.sql.Types.BIGINT);
+                ps.setNull(8, java.sql.Types.INTEGER);
+            }
+            return ps;
+        }, keyHolder);
+
+        Long generatedId = keyHolder.getKey().longValue();
+
+        String coverImageSql = "INSERT INTO cover_image (session_id, file_size, file_extension, width, height) " +
+                "VALUES (?, ?, ?, ?, ?)";
+
+        CoverImage coverImage = session.getCoverImage();
+        CoverImageDimension coverImageDimension = coverImage.getDimension();
+        int coverImageResult = jdbcTemplate.update(coverImageSql,
+                generatedId,
+                coverImage.getFileSize(),
+                coverImage.getFileExtension(),
+                coverImageDimension.getWidth(),
+                coverImageDimension.getHeight()
         );
 
-        if (result > 0) {
-            String coverImageSql = "INSERT INTO cover_image (session_id, file_size, file_extension, width, height) " +
-                    "VALUES (?, ?, ?, ?, ?)";
-
-            CoverImage coverImage = session.getCoverImage();
-            CoverImageDimension coverImageDimension = coverImage.getDimension();
-            jdbcTemplate.update(coverImageSql,
-                    session.getId(),
-                    coverImage.getFileSize(),
-                    coverImage.getFileExtension(),
-                    coverImageDimension.getWidth(),
-                    coverImageDimension.getHeight()
-            );
-        }
-
-        return result;
+        return coverImageResult;
     }
 
     @Override

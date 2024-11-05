@@ -34,23 +34,31 @@ class SessionRepositoryTest {
 
     @Test
     void crud() {
-        jdbcTemplate.update("INSERT INTO session (id, course_id, title, session_type, status, start_date, end_date)" +
-                        "VALUES (1, 1, 'TDD 강의', 'FREE', 'PREPARING', ?, ?)",
-                LocalDateTime.now(),
-                LocalDateTime.now().plusDays(30));
+        CoverImage coverImage = new CoverImage(512000, "JPG", 300, 200);
+        LocalDateTime startDate = LocalDateTime.now();
+        LocalDateTime endDate = startDate.plusDays(30);
 
-        jdbcTemplate.update("INSERT INTO cover_image (session_id, file_size, file_extension, width, height)" +
-                "VALUES (1, 512000, 'JPG', 300, 200)");
-
-        Optional<Session> session = sessionRepository.findById(1L);
-
-        assertThat(session).isPresent();
-        Session foundSession = session.get();
-
-        assertAll(
-                () -> assertThat(foundSession.getSessionType()).isEqualTo(SessionType.FREE),
-                () -> assertThat(foundSession).isInstanceOf(FreeSession.class)
+        Session session = new FreeSession(
+                0L,
+                1L,
+                "TDD 강의",
+                coverImage,
+                startDate,
+                endDate
         );
-        LOGGER.debug("Session: {}", foundSession);
+
+        int saveResult = sessionRepository.save(session);
+        Optional<Session> foundSession = sessionRepository.findById(1L);
+
+        assertThat(saveResult).isEqualTo(1);
+        assertThat(foundSession).isPresent();
+
+        Session actual = foundSession.get();
+        assertAll(
+                () -> assertThat(actual.getSessionType()).isEqualTo(SessionType.FREE),
+                () -> assertThat(actual).isInstanceOf(FreeSession.class),
+                () -> assertThat(actual.getTitle()).isEqualTo("TDD 강의"),
+                () -> assertThat(actual.getCourseId()).isEqualTo(1L)
+        );
     }
 }
