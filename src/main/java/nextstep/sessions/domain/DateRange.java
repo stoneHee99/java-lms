@@ -19,4 +19,12 @@ public class DateRange {
             throw new IllegalArgumentException("시작 날짜는 종료 날짜 이전이어야 합니다.");
         }
     }
+
+    public LocalDateTime getStartDate() {
+        return startDate;
+    }
+
+    public LocalDateTime getEndDate() {
+        return endDate;
+    }
 }

@@ -25,4 +25,8 @@ public enum CoverImageExtension {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("허용되지 않는 이미지 확장자입니다."));
     }
+
+    public String getExtension() {
+        return extension;
+    }
 }

@@ -57,8 +57,28 @@ public abstract class Session {
         }
     }
 
-    protected Long getId() {
+    public Long getId() {
         return id;
+    }
+
+    public Long getCourseId() {
+        return courseId;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getStatus() {
+        return status.toString();
+    }
+
+    public CoverImage getCoverImage() {
+        return coverImage;
+    }
+
+    public DateRange getSessionDateRange() {
+        return sessionDateRange;
     }
 
     public SessionType getSessionType() {

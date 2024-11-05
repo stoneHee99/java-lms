@@ -26,4 +26,12 @@ public class PaidSession extends Session {
     private boolean canEnroll(Payment payment) {
         return (isEnrollmentOpen() && payment.isSamePrice(price) && maxParticipants > getEnrolledUserCount());
     }
+
+    public long getPrice() {
+        return price;
+    }
+
+    public int getMaxParticipants() {
+        return maxParticipants;
+    }
 }

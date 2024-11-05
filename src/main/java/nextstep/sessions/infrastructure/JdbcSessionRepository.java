@@ -21,6 +21,42 @@ public class JdbcSessionRepository implements SessionRepository {
     }
 
     @Override
+    public int save(Session session) {
+        String sql = "INSERT INTO session (course_id, title, session_type, status, start_date, end_date, price, max_participants) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+        DateRange dateRange = session.getSessionDateRange();
+
+        int result = jdbcTemplate.update(sql,
+                session.getCourseId(),
+                session.getTitle(),
+                session.getSessionType().name(),
+                session.getStatus(),
+                dateRange.getStartDate(),
+                dateRange.getEndDate(),
+                session instanceof PaidSession ? ((PaidSession) session).getPrice() : null,
+                session instanceof PaidSession ? ((PaidSession) session).getMaxParticipants() : null
+        );
+
+        if (result > 0) {
+            String coverImageSql = "INSERT INTO cover_image (session_id, file_size, file_extension, width, height) " +
+                    "VALUES (?, ?, ?, ?, ?)";
+
+            CoverImage coverImage = session.getCoverImage();
+            CoverImageDimension coverImageDimension = coverImage.getDimension();
+            jdbcTemplate.update(coverImageSql,
+                    session.getId(),
+                    coverImage.getFileSize(),
+                    coverImage.getFileExtension(),
+                    coverImageDimension.getWidth(),
+                    coverImageDimension.getHeight()
+            );
+        }
+
+        return result;
+    }
+
+    @Override
     public Optional<Session> findById(Long id) {
         String sql = "SELECT s.id, s.course_id, s.title, s.session_type, s.status, " +
                 "s.start_date, s.end_date, s.price, s.max_participants, " +

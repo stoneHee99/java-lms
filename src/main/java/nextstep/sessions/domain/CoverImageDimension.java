@@ -31,4 +31,12 @@ public class CoverImageDimension {
             throw new IllegalArgumentException("이미지 비율은 3:2 여야 합니다.");
         }
     }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
 }

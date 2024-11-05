@@ -15,4 +15,8 @@ public class CoverImageFileSize {
             throw new IllegalArgumentException("이미지 파일 크기는 1MB를 넘을 수 없습니다.");
         }
     }
+
+    public int getValue() {
+        return value;
+    }
 }

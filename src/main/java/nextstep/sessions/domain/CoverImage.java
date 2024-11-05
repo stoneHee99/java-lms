@@ -32,4 +32,16 @@ public class CoverImage {
     private void validateImageDimensions() {
         dimension.validate();
     }
+
+    public int getFileSize() {
+        return fileSize.getValue();
+    }
+
+    public String getFileExtension() {
+        return fileExtension.getExtension();
+    }
+
+    public CoverImageDimension getDimension() {
+        return dimension;
+    }
 }
