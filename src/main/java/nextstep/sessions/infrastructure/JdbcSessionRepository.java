@@ -27,7 +27,7 @@ public class JdbcSessionRepository implements SessionRepository {
                 "c.id as cover_id, c.file_size, c.file_extension, c.width, c.height, " +
                 "p.price, p.max_participants " +
                 "FROM session s " +
-                "LEFT JOIN cover_image c ON s.id = c.session_id " +
+                "INNER JOIN cover_image c ON s.id = c.session_id " +
                 "LEFT JOIN paid_session_info p ON s.id = p.session_id " +
                 "WHERE s.id = ?";
 
