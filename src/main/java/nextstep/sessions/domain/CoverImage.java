@@ -1,42 +1,27 @@
 package nextstep.sessions.domain;
 
-import java.util.Arrays;
-import java.util.Set;
-
 public class CoverImage {
 
-    private static final int MAX_FILE_SIZE = 1024 * 1024; // 1MB
-    private static final int MIN_WIDTH = 300;
-    private static final int MIN_HEIGHT = 200;
-    private static final double ASPECT_RATIO = 3.0 / 2.0;
-
-    private final int fileSize;
+    private final CoverImageFileSize fileSize;
     private final CoverImageExtension fileExtension;
-    private final int width;
-    private final int height;
+    private final CoverImageDimension dimension;
 
-    public CoverImage() {
-        this(100, "jpg", 300, 200);
-    }
-
-    public CoverImage(int fileSize, String fileExtension, int width, int height) {
+    public CoverImage(CoverImageFileSize fileSize, CoverImageExtension fileExtension, CoverImageDimension dimension) {
         this.fileSize = fileSize;
-        this.fileExtension = CoverImageExtension.parseExtension(fileExtension);
-        this.width = width;
-        this.height = height;
+        this.fileExtension = fileExtension;
+        this.dimension = dimension;
         validate();
     }
 
-    private void validate() {
-        validateFileSize();
-        if (!isVectorImage()) {
-            validateImageDimensions();
-        }
+    public CoverImage(int fileSize, String fileExtension, int width, int height) {
+        this(new CoverImageFileSize(fileSize),
+                CoverImageExtension.parseExtension(fileExtension),
+                new CoverImageDimension(width, height));
     }
 
-    private void validateFileSize() {
-        if (fileSize > MAX_FILE_SIZE) {
-            throw new IllegalArgumentException("이미지 파일 크기는 1MB를 넘을 수 없습니다.");
+    private void validate() {
+        if (!isVectorImage()) {
+            validateImageDimensions();
         }
     }
 
@@ -45,12 +30,18 @@ public class CoverImage {
     }
 
     private void validateImageDimensions() {
-        if (width < MIN_WIDTH || height < MIN_HEIGHT) {
-            throw new IllegalArgumentException("이미지 크기는 최소 300 x 200 이상이어야 합니다.");
-        }
-        double ratio = (double) width / height;
-        if (ratio != ASPECT_RATIO) {
-            throw new IllegalArgumentException("이미지 비율은 3:2 여야 합니다.");
-        }
+        dimension.validate();
+    }
+
+    public int getFileSize() {
+        return fileSize.getValue();
+    }
+
+    public String getFileExtension() {
+        return fileExtension.getExtension();
+    }
+
+    public CoverImageDimension getDimension() {
+        return dimension;
     }
 }

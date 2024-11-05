@@ -10,6 +10,8 @@ public abstract class Session {
 
     private final Long id;
 
+    private final Long courseId;
+
     private final String title;
 
     private final SessionType sessionType;
@@ -37,8 +39,9 @@ public abstract class Session {
         this.status = status.nextState();
     }
 
-    Session(Long id, String title, SessionType sessionType, CoverImage image, LocalDateTime startDate, LocalDateTime endDate) {
+    Session(Long id, Long courseId, String title, SessionType sessionType, CoverImage image, LocalDateTime startDate, LocalDateTime endDate) {
         this.id = id;
+        this.courseId = courseId;
         this.title = title;
         this.sessionType = sessionType;
         this.coverImage = image;
@@ -47,7 +50,35 @@ public abstract class Session {
 
 
     protected void enroll(Enrollment enrollment) {
+        int currentEnrolledUserCount = enrollments.size();
         enrollments.add(enrollment);
+        if (currentEnrolledUserCount == enrollments.size()) {
+            throw new IllegalArgumentException("이미 수강 신청한 사용자입니다.");
+        }
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public Long getCourseId() {
+        return courseId;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getStatus() {
+        return status.toString();
+    }
+
+    public CoverImage getCoverImage() {
+        return coverImage;
+    }
+
+    public DateRange getSessionDateRange() {
+        return sessionDateRange;
     }
 
     public SessionType getSessionType() {
