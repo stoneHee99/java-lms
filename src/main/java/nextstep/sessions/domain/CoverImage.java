@@ -1,13 +1,6 @@
 package nextstep.sessions.domain;
 
-import java.util.Arrays;
-import java.util.Set;
-
 public class CoverImage {
-
-    private static final int MIN_WIDTH = 300;
-    private static final int MIN_HEIGHT = 200;
-    private static final double ASPECT_RATIO = 3.0 / 2.0;
 
     private final CoverImageFileSize fileSize;
     private final CoverImageExtension fileExtension;
