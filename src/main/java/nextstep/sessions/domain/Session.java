@@ -129,8 +129,10 @@ public abstract class Session {
     }
 
     private Enrollment findPendingEnrollment(Long userId) {
+        NsUser targetUser = new NsUser(userId, null);
+
         return enrollments.stream()
-                .filter(e -> e.getUser().getId().equals(userId))
+                .filter(e -> e.getUser().equals(targetUser))
                 .filter(Enrollment::isPending)
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("대기중인 수강신청을 찾을 수 없습니다."));
