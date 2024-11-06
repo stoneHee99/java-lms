@@ -22,7 +22,7 @@ public abstract class Session {
 
     private SessionProgressStatus progressStatus = SessionProgressStatus.PREPARING;
 
-    private EnrollmentStatus enrollmentStatus = EnrollmentStatus.CLOSED;
+    private RecruitmentStatus recruitmentStatus = RecruitmentStatus.CLOSED;
 
     private final List<CoverImage> coverImages = new ArrayList<>();
 
@@ -31,11 +31,11 @@ public abstract class Session {
     private final DateRange sessionDateRange;
 
     protected boolean isEnrollmentOpen() {
-        return enrollmentStatus == EnrollmentStatus.OPEN;
+        return recruitmentStatus == RecruitmentStatus.OPEN;
     }
 
     public void startRecruitment() {
-        this.enrollmentStatus = EnrollmentStatus.OPEN;
+        this.recruitmentStatus = RecruitmentStatus.OPEN;
     }
 
     public Session(Long id, Long courseId, String title, SessionType sessionType, List<CoverImage> coverImages, LocalDateTime startDate, LocalDateTime endDate) {
@@ -76,8 +76,8 @@ public abstract class Session {
         return progressStatus;
     }
 
-    public EnrollmentStatus getEnrollmentStatus() {
-        return enrollmentStatus;
+    public RecruitmentStatus getEnrollmentStatus() {
+        return recruitmentStatus;
     }
 
     @Deprecated

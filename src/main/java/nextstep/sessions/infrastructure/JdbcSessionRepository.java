@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -128,7 +127,7 @@ public class JdbcSessionRepository implements SessionRepository {
         private final String title;
         private final SessionType sessionType;
         private final SessionProgressStatus progressStatus;
-        private final EnrollmentStatus enrollmentStatus;
+        private final RecruitmentStatus recruitmentStatus;
         private final LocalDateTime startDate;
         private final LocalDateTime endDate;
         private final Long price;
@@ -139,13 +138,13 @@ public class JdbcSessionRepository implements SessionRepository {
         private final Integer width;
         private final Integer height;
 
-        private SessionWithCoverImage(Long id, Long courseId, String title, SessionType sessionType, SessionProgressStatus progressStatus, EnrollmentStatus enrollmentStatus, LocalDateTime startDate, LocalDateTime endDate, Long price, Integer maxParticipants, Long coverId, Integer fileSize, String fileExtension, Integer width, Integer height) {
+        private SessionWithCoverImage(Long id, Long courseId, String title, SessionType sessionType, SessionProgressStatus progressStatus, RecruitmentStatus recruitmentStatus, LocalDateTime startDate, LocalDateTime endDate, Long price, Integer maxParticipants, Long coverId, Integer fileSize, String fileExtension, Integer width, Integer height) {
             this.id = id;
             this.courseId = courseId;
             this.title = title;
             this.sessionType = sessionType;
             this.progressStatus = progressStatus;
-            this.enrollmentStatus = enrollmentStatus;
+            this.recruitmentStatus = recruitmentStatus;
             this.startDate = startDate;
             this.endDate = endDate;
             this.price = price;
@@ -167,7 +166,7 @@ public class JdbcSessionRepository implements SessionRepository {
                     rs.getString("title"),
                     SessionType.valueOf(rs.getString("session_type")),
                     SessionProgressStatus.valueOf(rs.getString("progress_status")),
-                    EnrollmentStatus.valueOf(rs.getString("enrollment_status")),
+                    RecruitmentStatus.valueOf(rs.getString("enrollment_status")),
                     toLocalDateTime(rs.getTimestamp("start_date")),
                     toLocalDateTime(rs.getTimestamp("end_date")),
                     rs.getLong("price"),

@@ -1,6 +1,6 @@
 package nextstep.sessions.domain;
 
-public enum EnrollmentState {
+public enum EnrollmnetApprovalStatus {
     PENDING,
     APPROVED,
     REJECTED;

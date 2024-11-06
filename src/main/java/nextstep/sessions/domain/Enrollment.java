@@ -11,7 +11,7 @@ public class Enrollment {
     private final Long sessionId;
     private final NsUser user;
     private final LocalDateTime enrolledAt;
-    private EnrollmentState state = EnrollmentState.PENDING;
+    private EnrollmnetApprovalStatus state = EnrollmnetApprovalStatus.PENDING;
 
     public Enrollment(Long id, Long sessionId, NsUser user, LocalDateTime enrolledAt) {
         this.id = id;
@@ -21,25 +21,25 @@ public class Enrollment {
     }
 
     public void approve() {
-        if (state != EnrollmentState.PENDING) {
+        if (state != EnrollmnetApprovalStatus.PENDING) {
             throw new IllegalStateException("대기중인 수강신청만 승인할 수 있습니다.");
         }
-        this.state = EnrollmentState.APPROVED;
+        this.state = EnrollmnetApprovalStatus.APPROVED;
     }
 
     public void reject() {
-        if (state != EnrollmentState.PENDING) {
+        if (state != EnrollmnetApprovalStatus.PENDING) {
             throw new IllegalStateException("대기중인 수강신청만 거절할 수 있습니다.");
         }
-        this.state = EnrollmentState.REJECTED;
+        this.state = EnrollmnetApprovalStatus.REJECTED;
     }
 
     public boolean isPending() {
-        return state == EnrollmentState.PENDING;
+        return state == EnrollmnetApprovalStatus.PENDING;
     }
 
     public boolean isApproved() {
-        return state == EnrollmentState.APPROVED;
+        return state == EnrollmnetApprovalStatus.APPROVED;
     }
 
     public NsUser getUser() {
