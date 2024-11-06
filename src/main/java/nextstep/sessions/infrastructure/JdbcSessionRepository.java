@@ -22,59 +22,62 @@ public class JdbcSessionRepository implements SessionRepository {
 
     @Override
     public int save(Session session) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        int sessionResult = saveSession(session, keyHolder);
+        saveCoverImage(session.getCoverImage(), keyHolder.getKey().longValue());
+        return sessionResult;
+    }
+
+    private int saveSession(Session session, KeyHolder keyHolder) {
         String sql = "INSERT INTO session (course_id, title, session_type, status, start_date, end_date, price, max_participants) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        DateRange dateRange = session.getSessionDateRange();
-
-        int sessionResult = jdbcTemplate.update(connection -> {
+        return jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            ps.setLong(1, session.getCourseId());
-            ps.setString(2, session.getTitle());
-            ps.setString(3, session.getSessionType().name());
-            ps.setString(4, session.getStatus());
-            ps.setTimestamp(5, Timestamp.valueOf(dateRange.getStartDate()));
-            ps.setTimestamp(6, Timestamp.valueOf(dateRange.getEndDate()));
-
-            if (session instanceof PaidSession) {
-                PaidSession paidSession = (PaidSession) session;
-                ps.setLong(7, paidSession.getPrice());
-                ps.setInt(8, paidSession.getMaxParticipants());
-            } else {
-                ps.setNull(7, java.sql.Types.BIGINT);
-                ps.setNull(8, java.sql.Types.INTEGER);
-            }
+            setSessionParameters(ps, session);
             return ps;
         }, keyHolder);
+    }
 
-        Long generatedId = keyHolder.getKey().longValue();
+    private void setSessionParameters(PreparedStatement ps, Session session) throws SQLException {
+        DateRange dateRange = session.getSessionDateRange();
+        ps.setLong(1, session.getCourseId());
+        ps.setString(2, session.getTitle());
+        ps.setString(3, session.getSessionType().name());
+        ps.setString(4, session.getStatus());
+        ps.setTimestamp(5, Timestamp.valueOf(dateRange.getStartDate()));
+        ps.setTimestamp(6, Timestamp.valueOf(dateRange.getEndDate()));
+        setPaidSessionParameters(ps, session);
+    }
 
-        String coverImageSql = "INSERT INTO cover_image (session_id, file_size, file_extension, width, height) " +
+    private void setPaidSessionParameters(PreparedStatement ps, Session session) throws SQLException {
+        if (session instanceof PaidSession) {
+            PaidSession paidSession = (PaidSession) session;
+            ps.setLong(7, paidSession.getPrice());
+            ps.setInt(8, paidSession.getMaxParticipants());
+        } else {
+            ps.setNull(7, Types.BIGINT);
+            ps.setNull(8, Types.INTEGER);
+        }
+    }
+
+    private void saveCoverImage(CoverImage coverImage, Long sessionId) {
+        String sql = "INSERT INTO cover_image (session_id, file_size, file_extension, width, height) " +
                 "VALUES (?, ?, ?, ?, ?)";
 
-        CoverImage coverImage = session.getCoverImage();
-        CoverImageDimension coverImageDimension = coverImage.getDimension();
-        jdbcTemplate.update(coverImageSql,
-                generatedId,
+        CoverImageDimension dimension = coverImage.getDimension();
+        jdbcTemplate.update(sql,
+                sessionId,
                 coverImage.getFileSize(),
                 coverImage.getFileExtension(),
-                coverImageDimension.getWidth(),
-                coverImageDimension.getHeight()
+                dimension.getWidth(),
+                dimension.getHeight()
         );
-
-        return sessionResult;
     }
 
     @Override
     public Optional<Session> findById(Long id) {
-        String sql = "SELECT s.id, s.course_id, s.title, s.session_type, s.status, " +
-                "s.start_date, s.end_date, s.price, s.max_participants, " +
-                "c.id as cover_id, c.file_size, c.file_extension, c.width, c.height " +
-                "FROM session s " +
-                "INNER JOIN cover_image c ON s.id = c.session_id " +
-                "WHERE s.id = ?";
-
+        String sql = getFindByIdQuery();
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, new SessionRowMapper(), id));
         } catch (EmptyResultDataAccessException e) {
@@ -82,26 +85,46 @@ public class JdbcSessionRepository implements SessionRepository {
         }
     }
 
+    private String getFindByIdQuery() {
+        return "SELECT s.id, s.course_id, s.title, s.session_type, s.status, " +
+                "s.start_date, s.end_date, s.price, s.max_participants, " +
+                "c.id as cover_id, c.file_size, c.file_extension, c.width, c.height " +
+                "FROM session s " +
+                "INNER JOIN cover_image c ON s.id = c.session_id " +
+                "WHERE s.id = ?";
+    }
+
     private static class SessionRowMapper implements RowMapper<Session> {
         @Override
         public Session mapRow(ResultSet rs, int rowNum) throws SQLException {
-            SessionType sessionType = SessionType.valueOf(rs.getString("session_type"));
+            return createSession(rs);
+        }
 
+        private Session createSession(ResultSet rs) throws SQLException {
+            SessionType sessionType = SessionType.valueOf(rs.getString("session_type"));
             CoverImage coverImage = createCoverImage(rs);
             LocalDateTime startDate = toLocalDateTime(rs.getTimestamp("start_date"));
             LocalDateTime endDate = toLocalDateTime(rs.getTimestamp("end_date"));
 
-            if (sessionType == SessionType.FREE) {
-                return new FreeSession(
-                        rs.getLong("id"),
-                        rs.getLong("course_id"),
-                        rs.getString("title"),
-                        coverImage,
-                        startDate,
-                        endDate
-                );
-            }
+            return sessionType == SessionType.FREE ?
+                    createFreeSession(rs, coverImage, startDate, endDate) :
+                    createPaidSession(rs, coverImage, startDate, endDate);
+        }
 
+        private FreeSession createFreeSession(ResultSet rs, CoverImage coverImage,
+                                              LocalDateTime startDate, LocalDateTime endDate) throws SQLException {
+            return new FreeSession(
+                    rs.getLong("id"),
+                    rs.getLong("course_id"),
+                    rs.getString("title"),
+                    coverImage,
+                    startDate,
+                    endDate
+            );
+        }
+
+        private PaidSession createPaidSession(ResultSet rs, CoverImage coverImage,
+                                              LocalDateTime startDate, LocalDateTime endDate) throws SQLException {
             return new PaidSession(
                     rs.getLong("id"),
                     rs.getLong("course_id"),
@@ -124,10 +147,7 @@ public class JdbcSessionRepository implements SessionRepository {
         }
 
         private LocalDateTime toLocalDateTime(Timestamp timestamp) {
-            if (timestamp == null) {
-                return null;
-            }
-            return timestamp.toLocalDateTime();
+            return timestamp != null ? timestamp.toLocalDateTime() : null;
         }
     }
 }
