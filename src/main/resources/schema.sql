@@ -65,6 +65,8 @@ create table session (
     title varchar(255) not null,
     session_type varchar(20) not null,
     status varchar(20) not null default 'PREPARING',
+    progress_status varchar(20) not null default 'PREPARING',
+    enrollment_status varchar(20) not null default 'CLOSED',
     start_date timestamp not null,
     end_date timestamp not null,
     price bigint,

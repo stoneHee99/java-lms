@@ -10,8 +10,11 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository("sessionRepository")
 public class JdbcSessionRepository implements SessionRepository {
@@ -25,7 +28,11 @@ public class JdbcSessionRepository implements SessionRepository {
     public int save(Session session) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         int sessionResult = saveSession(session, keyHolder);
-        saveCoverImage(session.getCoverImage(), Objects.requireNonNull(keyHolder.getKey()).longValue());
+        Long sessionId = Objects.requireNonNull(keyHolder.getKey()).longValue();
+
+        for (CoverImage coverImage : session.getCoverImages()) {
+            saveCoverImage(coverImage, sessionId);
+        }
         return sessionResult;
     }
 
@@ -56,11 +63,11 @@ public class JdbcSessionRepository implements SessionRepository {
     private void setPaidSessionParameters(PreparedStatement ps, Session session) throws SQLException {
         if (session instanceof PaidSession) {
             PaidSession paidSession = (PaidSession) session;
-            ps.setLong(7, paidSession.getPrice());
-            ps.setInt(8, paidSession.getMaxParticipants());
+            ps.setLong(8, paidSession.getPrice());
+            ps.setInt(9, paidSession.getMaxParticipants());
         } else {
-            ps.setNull(7, Types.BIGINT);
-            ps.setNull(8, Types.INTEGER);
+            ps.setNull(8, Types.BIGINT);
+            ps.setNull(9, Types.INTEGER);
         }
     }
 
@@ -82,7 +89,24 @@ public class JdbcSessionRepository implements SessionRepository {
     public Optional<Session> findById(Long id) {
         String sql = getFindByIdQuery();
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, new SessionRowMapper(), id));
+            List<SessionWithCoverImage> results = jdbcTemplate.query(sql, new SessionWithCoverImageRowMapper(), id);
+
+            if (results.isEmpty()) {
+                return Optional.empty();
+            }
+
+            SessionWithCoverImage first = results.get(0);
+            Session session = first.sessionType == SessionType.FREE ?
+                    createFreeSession(first) :
+                    createPaidSession(first);
+
+            List<CoverImage> coverImages = results.stream()
+                    .map(this::createCoverImage)
+                    .collect(Collectors.toList());
+
+            session.setCoverImages(coverImages);
+
+            return Optional.of(session);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -98,51 +122,57 @@ public class JdbcSessionRepository implements SessionRepository {
                 "WHERE s.id = ?";
     }
 
-    private static class SessionRowMapper implements RowMapper<Session> {
+    private static class SessionWithCoverImage {
+        private final Long id;
+        private final Long courseId;
+        private final String title;
+        private final SessionType sessionType;
+        private final SessionProgressStatus progressStatus;
+        private final EnrollmentStatus enrollmentStatus;
+        private final LocalDateTime startDate;
+        private final LocalDateTime endDate;
+        private final Long price;
+        private final Integer maxParticipants;
+        private final Long coverId;
+        private final Integer fileSize;
+        private final String fileExtension;
+        private final Integer width;
+        private final Integer height;
+
+        private SessionWithCoverImage(Long id, Long courseId, String title, SessionType sessionType, SessionProgressStatus progressStatus, EnrollmentStatus enrollmentStatus, LocalDateTime startDate, LocalDateTime endDate, Long price, Integer maxParticipants, Long coverId, Integer fileSize, String fileExtension, Integer width, Integer height) {
+            this.id = id;
+            this.courseId = courseId;
+            this.title = title;
+            this.sessionType = sessionType;
+            this.progressStatus = progressStatus;
+            this.enrollmentStatus = enrollmentStatus;
+            this.startDate = startDate;
+            this.endDate = endDate;
+            this.price = price;
+            this.maxParticipants = maxParticipants;
+            this.coverId = coverId;
+            this.fileSize = fileSize;
+            this.fileExtension = fileExtension;
+            this.width = width;
+            this.height = height;
+        }
+    }
+
+    private static class SessionWithCoverImageRowMapper implements RowMapper<SessionWithCoverImage> {
         @Override
-        public Session mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return createSession(rs);
-        }
-
-        private Session createSession(ResultSet rs) throws SQLException {
-            SessionType sessionType = SessionType.valueOf(rs.getString("session_type"));
-            CoverImage coverImage = createCoverImage(rs);
-            LocalDateTime startDate = toLocalDateTime(rs.getTimestamp("start_date"));
-            LocalDateTime endDate = toLocalDateTime(rs.getTimestamp("end_date"));
-
-            return sessionType == SessionType.FREE ?
-                    createFreeSession(rs, coverImage, startDate, endDate) :
-                    createPaidSession(rs, coverImage, startDate, endDate);
-        }
-
-        private FreeSession createFreeSession(ResultSet rs, CoverImage coverImage,
-                                              LocalDateTime startDate, LocalDateTime endDate) throws SQLException {
-            return new FreeSession(
+        public SessionWithCoverImage mapRow(ResultSet rs, int rowNum) throws SQLException {
+            return new SessionWithCoverImage(
                     rs.getLong("id"),
                     rs.getLong("course_id"),
                     rs.getString("title"),
-                    coverImage,
-                    startDate,
-                    endDate
-            );
-        }
-
-        private PaidSession createPaidSession(ResultSet rs, CoverImage coverImage,
-                                              LocalDateTime startDate, LocalDateTime endDate) throws SQLException {
-            return new PaidSession(
-                    rs.getLong("id"),
-                    rs.getLong("course_id"),
-                    rs.getString("title"),
+                    SessionType.valueOf(rs.getString("session_type")),
+                    SessionProgressStatus.valueOf(rs.getString("progress_status")),
+                    EnrollmentStatus.valueOf(rs.getString("enrollment_status")),
+                    toLocalDateTime(rs.getTimestamp("start_date")),
+                    toLocalDateTime(rs.getTimestamp("end_date")),
                     rs.getLong("price"),
                     rs.getInt("max_participants"),
-                    coverImage,
-                    startDate,
-                    endDate
-            );
-        }
-
-        private CoverImage createCoverImage(ResultSet rs) throws SQLException {
-            return new CoverImage(
+                    rs.getLong("cover_id"),
                     rs.getInt("file_size"),
                     rs.getString("file_extension"),
                     rs.getInt("width"),
@@ -150,8 +180,44 @@ public class JdbcSessionRepository implements SessionRepository {
             );
         }
 
-        private LocalDateTime toLocalDateTime(Timestamp timestamp) {
-            return timestamp != null ? timestamp.toLocalDateTime() : null;
-        }
+
     }
+
+    private FreeSession createFreeSession(SessionWithCoverImage data) {
+        return new FreeSession(
+                data.id,
+                data.courseId,
+                data.title,
+                createCoverImage(data),
+                data.startDate,
+                data.endDate
+        );
+    }
+
+    private PaidSession createPaidSession(SessionWithCoverImage data) {
+        return new PaidSession(
+                data.id,
+                data.courseId,
+                data.title,
+                data.price,
+                data.maxParticipants,
+                createCoverImage(data),
+                data.startDate,
+                data.endDate
+        );
+    }
+
+    private CoverImage createCoverImage(SessionWithCoverImage data) {
+        return new CoverImage(
+                data.fileSize,
+                data.fileExtension,
+                data.width,
+                data.height
+        );
+    }
+
+    private static LocalDateTime toLocalDateTime(Timestamp timestamp) {
+        return timestamp != null ? timestamp.toLocalDateTime() : null;
+    }
+
 }

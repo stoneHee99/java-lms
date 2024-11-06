@@ -1,8 +1,7 @@
 package nextstep.sessions.domain;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public abstract class Session {
 
@@ -21,7 +20,7 @@ public abstract class Session {
 
     private EnrollmentStatus enrollmentStatus = EnrollmentStatus.CLOSED;
 
-    private final CoverImage coverImage;
+    private final List<CoverImage> coverImages = new ArrayList<>();
 
     private final Set<Enrollment> enrollments = new HashSet<>();
 
@@ -39,13 +38,17 @@ public abstract class Session {
         this.enrollmentStatus = EnrollmentStatus.OPEN;
     }
 
-    Session(Long id, Long courseId, String title, SessionType sessionType, CoverImage image, LocalDateTime startDate, LocalDateTime endDate) {
+    public Session(Long id, Long courseId, String title, SessionType sessionType, List<CoverImage> coverImages, LocalDateTime startDate, LocalDateTime endDate) {
         this.id = id;
         this.courseId = courseId;
         this.title = title;
         this.sessionType = sessionType;
-        this.coverImage = image;
         this.sessionDateRange = new DateRange(startDate, endDate);
+        setCoverImages(coverImages);
+    }
+
+    public Session(Long id, Long courseId, String title, SessionType sessionType, CoverImage coverImage, LocalDateTime startDate, LocalDateTime endDate) {
+        this(id, courseId, title, sessionType, Collections.singletonList(coverImage), startDate, endDate);
     }
 
 
@@ -77,8 +80,13 @@ public abstract class Session {
         return enrollmentStatus;
     }
 
+    @Deprecated
     public CoverImage getCoverImage() {
-        return coverImage;
+        return coverImages.iterator().next();
+    }
+
+    public List<CoverImage> getCoverImages() {
+        return Collections.unmodifiableList(coverImages);
     }
 
     public DateRange getSessionDateRange() {
@@ -87,5 +95,10 @@ public abstract class Session {
 
     public SessionType getSessionType() {
         return sessionType;
+    }
+
+    public void setCoverImages(List<CoverImage> coverImages) {
+        this.coverImages.clear();
+        this.coverImages.addAll(coverImages);
     }
 }
