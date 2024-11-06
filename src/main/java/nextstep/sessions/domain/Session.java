@@ -69,8 +69,12 @@ public abstract class Session {
         return title;
     }
 
-    public String getStatus() {
-        return status.toString();
+    public SessionProgressStatus getProgressStatus() {
+        return progressStatus;
+    }
+
+    public EnrollmentStatus getEnrollmentStatus() {
+        return enrollmentStatus;
     }
 
     public CoverImage getCoverImage() {

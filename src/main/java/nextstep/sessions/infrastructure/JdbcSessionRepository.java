@@ -30,8 +30,9 @@ public class JdbcSessionRepository implements SessionRepository {
     }
 
     private int saveSession(Session session, KeyHolder keyHolder) {
-        String sql = "INSERT INTO session (course_id, title, session_type, status, start_date, end_date, price, max_participants) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO session (course_id, title, session_type, progress_status, enrollment_status, " +
+                "start_date, end_date, price, max_participants) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         return jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -45,9 +46,10 @@ public class JdbcSessionRepository implements SessionRepository {
         ps.setLong(1, session.getCourseId());
         ps.setString(2, session.getTitle());
         ps.setString(3, session.getSessionType().name());
-        ps.setString(4, session.getStatus());
-        ps.setTimestamp(5, Timestamp.valueOf(dateRange.getStartDate()));
-        ps.setTimestamp(6, Timestamp.valueOf(dateRange.getEndDate()));
+        ps.setString(4, session.getProgressStatus().name());
+        ps.setString(5, session.getEnrollmentStatus().name());
+        ps.setTimestamp(6, Timestamp.valueOf(dateRange.getStartDate()));
+        ps.setTimestamp(7, Timestamp.valueOf(dateRange.getEndDate()));
         setPaidSessionParameters(ps, session);
     }
 
@@ -87,7 +89,8 @@ public class JdbcSessionRepository implements SessionRepository {
     }
 
     private String getFindByIdQuery() {
-        return "SELECT s.id, s.course_id, s.title, s.session_type, s.status, " +
+        return "SELECT s.id, s.course_id, s.title, s.session_type, " +
+                "s.progress_status, s.enrollment_status, " +
                 "s.start_date, s.end_date, s.price, s.max_participants, " +
                 "c.id as cover_id, c.file_size, c.file_extension, c.width, c.height " +
                 "FROM session s " +
