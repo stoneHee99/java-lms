@@ -1,7 +1,5 @@
 package nextstep.sessions.domain;
 
-import nextstep.users.domain.NsUser;
-
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -16,7 +14,12 @@ public abstract class Session {
 
     private final SessionType sessionType;
 
+    @Deprecated
     private SessionStatus status = SessionStatus.PREPARING;
+
+    private SessionProgressStatus progressStatus = SessionProgressStatus.PREPARING;
+
+    private EnrollmentStatus enrollmentStatus = EnrollmentStatus.CLOSED;
 
     private final CoverImage coverImage;
 
@@ -25,7 +28,7 @@ public abstract class Session {
     private final DateRange sessionDateRange;
 
     protected boolean isEnrollmentOpen() {
-        return SessionStatus.isEnrollmentOpen(status);
+        return enrollmentStatus == EnrollmentStatus.OPEN;
     }
 
     protected int getEnrolledUserCount() {
@@ -33,10 +36,7 @@ public abstract class Session {
     }
 
     public void startRecruitment() {
-        if (!status.nextState().equals(SessionStatus.RECRUITING)) {
-            throw new IllegalStateException("모집을 시작할 수 없는 상태입니다.");
-        }
-        this.status = status.nextState();
+        this.enrollmentStatus = EnrollmentStatus.OPEN;
     }
 
     Session(Long id, Long courseId, String title, SessionType sessionType, CoverImage image, LocalDateTime startDate, LocalDateTime endDate) {

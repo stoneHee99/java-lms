@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.Optional;
 
 @Repository("sessionRepository")
@@ -24,7 +25,7 @@ public class JdbcSessionRepository implements SessionRepository {
     public int save(Session session) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         int sessionResult = saveSession(session, keyHolder);
-        saveCoverImage(session.getCoverImage(), keyHolder.getKey().longValue());
+        saveCoverImage(session.getCoverImage(), Objects.requireNonNull(keyHolder.getKey()).longValue());
         return sessionResult;
     }
 
