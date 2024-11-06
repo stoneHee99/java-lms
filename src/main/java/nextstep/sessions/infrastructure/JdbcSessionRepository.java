@@ -1,6 +1,9 @@
 package nextstep.sessions.infrastructure;
 
+import java.util.ArrayList;
 import nextstep.sessions.domain.*;
+import nextstep.users.domain.NsUser;
+import nextstep.users.domain.UserRepository;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
@@ -13,10 +16,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Repository("sessionRepository")
 public class JdbcSessionRepository implements SessionRepository {
+
     private final JdbcOperations jdbcTemplate;
 
     public JdbcSessionRepository(JdbcOperations jdbcTemplate) {
@@ -36,12 +39,15 @@ public class JdbcSessionRepository implements SessionRepository {
     }
 
     private int saveSession(Session session, KeyHolder keyHolder) {
-        String sql = "INSERT INTO session (course_id, title, session_type, progress_status, enrollment_status, " +
-                "start_date, end_date, price, max_participants) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql =
+                "INSERT INTO session (course_id, title, session_type, progress_status, recruitment_status, "
+                        +
+                        "start_date, end_date, price, max_participants) " +
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         return jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement ps = connection.prepareStatement(sql,
+                    Statement.RETURN_GENERATED_KEYS);
             setSessionParameters(ps, session);
             return ps;
         }, keyHolder);
@@ -53,13 +59,14 @@ public class JdbcSessionRepository implements SessionRepository {
         ps.setString(2, session.getTitle());
         ps.setString(3, session.getSessionType().name());
         ps.setString(4, session.getProgressStatus().name());
-        ps.setString(5, session.getEnrollmentStatus().name());
+        ps.setString(5, session.getRecruitmentStatus().name());
         ps.setTimestamp(6, Timestamp.valueOf(dateRange.getStartDate()));
         ps.setTimestamp(7, Timestamp.valueOf(dateRange.getEndDate()));
         setPaidSessionParameters(ps, session);
     }
 
-    private void setPaidSessionParameters(PreparedStatement ps, Session session) throws SQLException {
+    private void setPaidSessionParameters(PreparedStatement ps, Session session)
+            throws SQLException {
         if (session instanceof PaidSession) {
             PaidSession paidSession = (PaidSession) session;
             ps.setLong(8, paidSession.getPrice());
@@ -71,8 +78,9 @@ public class JdbcSessionRepository implements SessionRepository {
     }
 
     private void saveCoverImage(CoverImage coverImage, Long sessionId) {
-        String sql = "INSERT INTO cover_image (session_id, file_size, file_extension, width, height) " +
-                "VALUES (?, ?, ?, ?, ?)";
+        String sql =
+                "INSERT INTO cover_image (session_id, file_size, file_extension, width, height) " +
+                        "VALUES (?, ?, ?, ?, ?)";
 
         CoverImageDimension dimension = coverImage.getDimension();
         jdbcTemplate.update(sql,
@@ -86,133 +94,108 @@ public class JdbcSessionRepository implements SessionRepository {
 
     @Override
     public Optional<Session> findById(Long id) {
-        String sql = getFindByIdQuery();
-        try {
-            List<SessionWithCoverImage> results = jdbcTemplate.query(sql, new SessionWithCoverImageRowMapper(), id);
-
-            if (results.isEmpty()) {
-                return Optional.empty();
-            }
-
-            SessionWithCoverImage first = results.get(0);
-            Session session = first.sessionType == SessionType.FREE ?
-                    createFreeSession(first) :
-                    createPaidSession(first);
-
-            List<CoverImage> coverImages = results.stream()
-                    .map(this::createCoverImage)
-                    .collect(Collectors.toList());
-
-            session.setCoverImages(coverImages);
-
-            return Optional.of(session);
-        } catch (EmptyResultDataAccessException e) {
+        Session session = findSessionById(id);
+        if (session == null) {
             return Optional.empty();
         }
+
+        List<CoverImage> coverImages = findCoverImagesBySessionId(id);
+        session.setCoverImages(coverImages);
+
+        List<Enrollment> enrollments = findEnrollmentsBySessionId(id);
+        session.setEnrollments(enrollments);
+
+        return Optional.of(session);
     }
 
-    private String getFindByIdQuery() {
-        return "SELECT s.id, s.course_id, s.title, s.session_type, " +
-                "s.progress_status, s.enrollment_status, " +
-                "s.start_date, s.end_date, s.price, s.max_participants, " +
-                "c.id as cover_id, c.file_size, c.file_extension, c.width, c.height " +
-                "FROM session s " +
-                "INNER JOIN cover_image c ON s.id = c.session_id " +
-                "WHERE s.id = ?";
-    }
+    private Session findSessionById(Long id) {
+        String sql =
+                "SELECT id, course_id, title, session_type, progress_status, recruitment_status, " +
+                        "start_date, end_date, price, max_participants " +
+                        "FROM session WHERE id = ?";
 
-    private static class SessionWithCoverImage {
-        private final Long id;
-        private final Long courseId;
-        private final String title;
-        private final SessionType sessionType;
-        private final SessionProgressStatus progressStatus;
-        private final RecruitmentStatus recruitmentStatus;
-        private final LocalDateTime startDate;
-        private final LocalDateTime endDate;
-        private final Long price;
-        private final Integer maxParticipants;
-        private final Long coverId;
-        private final Integer fileSize;
-        private final String fileExtension;
-        private final Integer width;
-        private final Integer height;
-
-        private SessionWithCoverImage(Long id, Long courseId, String title, SessionType sessionType, SessionProgressStatus progressStatus, RecruitmentStatus recruitmentStatus, LocalDateTime startDate, LocalDateTime endDate, Long price, Integer maxParticipants, Long coverId, Integer fileSize, String fileExtension, Integer width, Integer height) {
-            this.id = id;
-            this.courseId = courseId;
-            this.title = title;
-            this.sessionType = sessionType;
-            this.progressStatus = progressStatus;
-            this.recruitmentStatus = recruitmentStatus;
-            this.startDate = startDate;
-            this.endDate = endDate;
-            this.price = price;
-            this.maxParticipants = maxParticipants;
-            this.coverId = coverId;
-            this.fileSize = fileSize;
-            this.fileExtension = fileExtension;
-            this.width = width;
-            this.height = height;
+        try {
+            return jdbcTemplate.queryForObject(sql, new SessionRowMapper(), id);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
         }
     }
 
-    private static class SessionWithCoverImageRowMapper implements RowMapper<SessionWithCoverImage> {
+    private List<CoverImage> findCoverImagesBySessionId(Long sessionId) {
+        String sql = "SELECT id, file_size, file_extension, width, height " +
+                "FROM cover_image WHERE session_id = ?";
+
+        return jdbcTemplate.query(sql, new CoverImageRowMapper(), sessionId);
+    }
+
+    private List<Enrollment> findEnrollmentsBySessionId(Long sessionId) {
+        String sql = "SELECT id, session_id, user_id, enrolled_at, approval_status " +
+                "FROM enrollment WHERE session_id = ?";
+
+        return jdbcTemplate.query(sql, new EnrollmentRowMapper(), sessionId);
+    }
+
+    private static class SessionRowMapper implements RowMapper<Session> {
+
         @Override
-        public SessionWithCoverImage mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return new SessionWithCoverImage(
+        public Session mapRow(ResultSet rs, int rowNum) throws SQLException {
+            SessionType sessionType = SessionType.valueOf(rs.getString("session_type"));
+            LocalDateTime startDate = toLocalDateTime(rs.getTimestamp("start_date"));
+            LocalDateTime endDate = toLocalDateTime(rs.getTimestamp("end_date"));
+
+            if (sessionType == SessionType.FREE) {
+                return new FreeSession(
+                        rs.getLong("id"),
+                        rs.getLong("course_id"),
+                        rs.getString("title"),
+                        new ArrayList<>(),
+                        startDate,
+                        endDate
+                );
+            }
+
+            return new PaidSession(
                     rs.getLong("id"),
                     rs.getLong("course_id"),
                     rs.getString("title"),
-                    SessionType.valueOf(rs.getString("session_type")),
-                    SessionProgressStatus.valueOf(rs.getString("progress_status")),
-                    RecruitmentStatus.valueOf(rs.getString("enrollment_status")),
-                    toLocalDateTime(rs.getTimestamp("start_date")),
-                    toLocalDateTime(rs.getTimestamp("end_date")),
                     rs.getLong("price"),
                     rs.getInt("max_participants"),
-                    rs.getLong("cover_id"),
+                    new ArrayList<>(),
+                    startDate,
+                    endDate
+            );
+        }
+    }
+
+    private static class EnrollmentRowMapper implements RowMapper<Enrollment> {
+
+        @Override
+        public Enrollment mapRow(ResultSet rs, int rowNum) throws SQLException {
+            NsUser user = new NsUser(
+                    rs.getLong("user_id"),
+                    "user" + rs.getLong("user_id") + "@example.com"
+            );
+
+            return new Enrollment(
+                    rs.getLong("id"),
+                    rs.getLong("session_id"),
+                    user,
+                    toLocalDateTime(rs.getTimestamp("enrolled_at"))
+            );
+        }
+    }
+
+    private static class CoverImageRowMapper implements RowMapper<CoverImage> {
+
+        @Override
+        public CoverImage mapRow(ResultSet rs, int rowNum) throws SQLException {
+            return new CoverImage(
                     rs.getInt("file_size"),
                     rs.getString("file_extension"),
                     rs.getInt("width"),
                     rs.getInt("height")
             );
         }
-
-
-    }
-
-    private FreeSession createFreeSession(SessionWithCoverImage data) {
-        return new FreeSession(
-                data.id,
-                data.courseId,
-                data.title,
-                createCoverImage(data),
-                data.startDate,
-                data.endDate
-        );
-    }
-
-    private PaidSession createPaidSession(SessionWithCoverImage data) {
-        return new PaidSession(
-                data.id,
-                data.courseId,
-                data.title,
-                data.price,
-                data.maxParticipants,
-                createCoverImage(data),
-                data.startDate,
-                data.endDate
-        );
-    }
-
-    private CoverImage createCoverImage(SessionWithCoverImage data) {
-        return new CoverImage(
-                data.fileSize,
-                data.fileExtension,
-                data.width,
-                data.height
-        );
     }
 
     private static LocalDateTime toLocalDateTime(Timestamp timestamp) {

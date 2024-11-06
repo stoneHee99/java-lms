@@ -1,6 +1,7 @@
 package nextstep.sessions.infrastructure;
 
 import nextstep.sessions.domain.*;
+import nextstep.users.domain.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;

@@ -73,7 +73,7 @@ public abstract class Session {
         return progressStatus;
     }
 
-    public RecruitmentStatus getEnrollmentStatus() {
+    public RecruitmentStatus getRecruitmentStatus() {
         return recruitmentStatus;
     }
 
@@ -97,6 +97,11 @@ public abstract class Session {
     public void setCoverImages(List<CoverImage> coverImages) {
         this.coverImages.clear();
         this.coverImages.addAll(coverImages);
+    }
+
+    public void setEnrollments(List<Enrollment> enrollments) {
+        this.enrollments.clear();
+        this.enrollments.addAll(enrollments);
     }
 
     protected int getEnrolledUserCount() {

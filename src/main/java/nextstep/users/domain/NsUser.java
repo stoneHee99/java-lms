@@ -39,6 +39,11 @@ public class NsUser {
         this.updatedAt = updatedAt;
     }
 
+    public NsUser(long userId, String email) {
+        this.userId = String.valueOf(userId);
+        this.email = email;
+    }
+
     public Long getId() {
         return id;
     }
