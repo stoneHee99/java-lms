@@ -28,7 +28,7 @@ public class JdbcSessionRepository implements SessionRepository {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         DateRange dateRange = session.getSessionDateRange();
 
-        jdbcTemplate.update(connection -> {
+        int sessionResult = jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             ps.setLong(1, session.getCourseId());
             ps.setString(2, session.getTitle());
@@ -55,7 +55,7 @@ public class JdbcSessionRepository implements SessionRepository {
 
         CoverImage coverImage = session.getCoverImage();
         CoverImageDimension coverImageDimension = coverImage.getDimension();
-        int coverImageResult = jdbcTemplate.update(coverImageSql,
+        jdbcTemplate.update(coverImageSql,
                 generatedId,
                 coverImage.getFileSize(),
                 coverImage.getFileExtension(),
@@ -63,7 +63,7 @@ public class JdbcSessionRepository implements SessionRepository {
                 coverImageDimension.getHeight()
         );
 
-        return coverImageResult;
+        return sessionResult;
     }
 
     @Override
