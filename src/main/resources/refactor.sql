@@ -21,3 +21,12 @@ ALTER TABLE sessions MODIFY COLUMN progress_status VARCHAR(20) NOT NULL;
 ALTER TABLE sessions MODIFY COLUMN enrollment_status VARCHAR(20) NOT NULL;
 
 -- ALTER TABLE sessions DROP COLUMN status;
+
+-- 강의 수강 신청 로직 변경에 따른 기존 데이터 수정 쿼리
+ALTER TABLE enrollment ADD COLUMN state VARCHAR(20);
+
+UPDATE enrollment SET state = 'APPROVED';
+
+ALTER TABLE enrollment ALTER COLUMN state SET NOT NULL;
+
+ALTER TABLE enrollment ALTER COLUMN state SET DEFAULT 'PENDING';

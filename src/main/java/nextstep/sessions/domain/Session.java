@@ -1,7 +1,11 @@
 package nextstep.sessions.domain;
 
+import nextstep.qna.UnAuthorizedException;
+import nextstep.users.domain.NsUser;
+
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public abstract class Session {
 
@@ -28,10 +32,6 @@ public abstract class Session {
 
     protected boolean isEnrollmentOpen() {
         return enrollmentStatus == EnrollmentStatus.OPEN;
-    }
-
-    protected int getEnrolledUserCount() {
-        return enrollments.size();
     }
 
     public void startRecruitment() {
@@ -100,5 +100,61 @@ public abstract class Session {
     public void setCoverImages(List<CoverImage> coverImages) {
         this.coverImages.clear();
         this.coverImages.addAll(coverImages);
+    }
+
+    protected int getEnrolledUserCount() {
+        return (int) enrollments.stream()
+                .filter(Enrollment::isApproved)
+                .count();
+    }
+
+    protected int getPendingUserCount() {
+        return (int) enrollments.stream()
+                .filter(Enrollment::isPending)
+                .count();
+    }
+
+    public void approveEnrollment(NsUser instructor, Long userId) {
+        validateInstructor(instructor);
+        Enrollment enrollment = findPendingEnrollment(userId);
+        enrollment.approve();
+    }
+
+    public void rejectEnrollment(NsUser instructor, Long userId) {
+        validateInstructor(instructor);
+        Enrollment enrollment = findPendingEnrollment(userId);
+        enrollment.reject();
+    }
+
+    private Enrollment findPendingEnrollment(Long userId) {
+        return enrollments.stream()
+                .filter(e -> e.getUser().getId().equals(userId))
+                .filter(Enrollment::isPending)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("대기중인 수강신청을 찾을 수 없습니다."));
+    }
+
+    private void validateInstructor(NsUser instructor) {
+        // TODO: 강사 권한 검증 로직 구현
+        if (!isInstructor(instructor)) {
+            throw new UnAuthorizedException("강사만 수강 승인/거절이 가능합니다.");
+        }
+    }
+
+    private boolean isInstructor(NsUser user) {
+        // TODO: 강사 여부 확인 로직 구현
+        return true;
+    }
+
+    public List<Enrollment> getPendingEnrollments() {
+        return enrollments.stream()
+                .filter(Enrollment::isPending)
+                .collect(Collectors.toUnmodifiableList());
+    }
+
+    public List<Enrollment> getApprovedEnrollments() {
+        return enrollments.stream()
+                .filter(Enrollment::isApproved)
+                .collect(Collectors.toUnmodifiableList());
     }
 }

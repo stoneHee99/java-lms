@@ -11,12 +11,39 @@ public class Enrollment {
     private final Long sessionId;
     private final NsUser user;
     private final LocalDateTime enrolledAt;
+    private EnrollmentState state = EnrollmentState.PENDING;
 
     public Enrollment(Long id, Long sessionId, NsUser user, LocalDateTime enrolledAt) {
         this.id = id;
         this.sessionId = sessionId;
         this.user = user;
         this.enrolledAt = enrolledAt;
+    }
+
+    public void approve() {
+        if (state != EnrollmentState.PENDING) {
+            throw new IllegalStateException("대기중인 수강신청만 승인할 수 있습니다.");
+        }
+        this.state = EnrollmentState.APPROVED;
+    }
+
+    public void reject() {
+        if (state != EnrollmentState.PENDING) {
+            throw new IllegalStateException("대기중인 수강신청만 거절할 수 있습니다.");
+        }
+        this.state = EnrollmentState.REJECTED;
+    }
+
+    public boolean isPending() {
+        return state == EnrollmentState.PENDING;
+    }
+
+    public boolean isApproved() {
+        return state == EnrollmentState.APPROVED;
+    }
+
+    public NsUser getUser() {
+        return user;
     }
 
     @Override

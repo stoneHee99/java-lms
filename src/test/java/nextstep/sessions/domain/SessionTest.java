@@ -35,7 +35,7 @@ class SessionTest {
                 LocalDateTime.now());
 
         assertThatThrownBy(() -> session.enroll(NsUserTest.JAVAJIGI))
-                .isInstanceOf(UnsupportedOperationException.class);
+                .isInstanceOf(IllegalStateException.class);
     }
 
     @DisplayName("유료 강의가 최대 수강 인원을 초과하지 않은 경우 수강 신청이 잘 되는지")
@@ -67,6 +67,7 @@ class SessionTest {
 
         session.startRecruitment();
         session.enroll(new Payment("id", 1L, 2L, 5000L), NsUserTest.SANJIGI);
+        session.approveEnrollment(NsUserTest.JAVAJIGI, 2L);
 
         assertThatThrownBy(() -> session.enroll(new Payment("id", 1L, 2L, 5000L), NsUserTest.JAVAJIGI))
                 .isInstanceOf(IllegalStateException.class);
@@ -87,5 +88,24 @@ class SessionTest {
 
         assertThatThrownBy(() -> session.enroll(new Payment("id", 1L, 2L, 1000L), NsUserTest.JAVAJIGI))
                 .isInstanceOf(IllegalStateException.class);
+    }
+
+    @DisplayName("이미 승인된 수강신청을 다시 승인하면 예외가 발생하는지")
+    @Test
+    void approveEnrollment_whenAlreadyApproved() {
+        PaidSession session = new PaidSession(0L, 0L,
+                "자바지기와 함께하는 자바 LiveLecture",
+                5000L,
+                1,
+                new CoverImage(300, "jpg", 300, 200),
+                LocalDateTime.now(),
+                LocalDateTime.now());
+
+        session.startRecruitment();
+        session.enroll(new Payment("id", 1L, 2L, 5000L), NsUserTest.SANJIGI);
+        session.approveEnrollment(NsUserTest.JAVAJIGI, 2L);
+
+        assertThatThrownBy(() -> session.approveEnrollment(NsUserTest.JAVAJIGI, 2L))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }
