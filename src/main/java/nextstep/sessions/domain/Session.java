@@ -17,9 +17,6 @@ public abstract class Session {
 
     private final SessionType sessionType;
 
-    @Deprecated
-    private SessionStatus status = SessionStatus.PREPARING;
-
     private SessionProgressStatus progressStatus = SessionProgressStatus.PREPARING;
 
     private RecruitmentStatus recruitmentStatus = RecruitmentStatus.CLOSED;
