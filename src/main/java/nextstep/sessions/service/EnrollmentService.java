@@ -35,6 +35,5 @@ public class EnrollmentService {
                 ((FreeSession) session).enroll(loginUser);
                 break;
         }
-
     }
 }

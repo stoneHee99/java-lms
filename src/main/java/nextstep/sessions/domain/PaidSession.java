@@ -1,5 +1,6 @@
 package nextstep.sessions.domain;
 
+import java.util.List;
 import nextstep.payments.domain.Payment;
 import nextstep.users.domain.NsUser;
 
@@ -12,6 +13,12 @@ public class PaidSession extends Session {
 
     public PaidSession(Long id, Long courseId, String title, long price, int maxParticipants, CoverImage coverImage, LocalDateTime startDate, LocalDateTime endDate) {
         super(id, courseId, title, SessionType.PAID, coverImage, startDate, endDate);
+        this.price = price;
+        this.maxParticipants = maxParticipants;
+    }
+
+    public PaidSession(Long id, Long courseId, String title, long price, int maxParticipants, List<CoverImage> coverImages, LocalDateTime startDate, LocalDateTime endDate) {
+        super(id, courseId, title, SessionType.PAID, coverImages, startDate, endDate);
         this.price = price;
         this.maxParticipants = maxParticipants;
     }

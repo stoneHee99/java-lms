@@ -39,6 +39,11 @@ public class NsUser {
         this.updatedAt = updatedAt;
     }
 
+    public NsUser(long userId, String email) {
+        this.id = userId;
+        this.email = email;
+    }
+
     public Long getId() {
         return id;
     }
@@ -115,6 +120,19 @@ public class NsUser {
 
     public boolean isGuestUser() {
         return false;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        NsUser nsUser = (NsUser) o;
+        return id != null && id.equals(nsUser.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
     }
 
     private static class GuestNsUser extends NsUser {

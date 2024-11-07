@@ -1,5 +1,6 @@
 package nextstep.sessions.domain;
 
+import java.util.List;
 import nextstep.users.domain.NsUser;
 
 import java.time.LocalDateTime;
@@ -10,9 +11,13 @@ public class FreeSession extends Session {
         super(id, courseId, title, SessionType.FREE, coverImage, startDate, endDate);
     }
 
+    public FreeSession(Long id, Long courseId, String title, List<CoverImage> coverImages, LocalDateTime startDate, LocalDateTime endDate) {
+        super(id, courseId, title, SessionType.FREE, coverImages, startDate, endDate);
+    }
+
     public void enroll(NsUser user) {
         if (!canEnroll()) {
-            throw new UnsupportedOperationException("수강 신청이 불가능한 상태입니다");
+            throw new IllegalStateException("수강 신청이 불가능한 상태입니다");
         }
         enroll(new Enrollment(0L, this.getId(), user, LocalDateTime.now()));
     }
